@@ -3,19 +3,22 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-
+import VueQuillEditor from 'vue-quill-editor'
+import store from "./store";
+import axios from "axios"
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 import ElementUI from 'element-ui';
 
 import 'element-ui/lib/theme-chalk/index.css';
-
+Vue.use(VueQuillEditor)
 Vue.use(ElementUI);
 Vue.use(ElementUI, { size: 'small', zIndex: 3000 });
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

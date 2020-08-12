@@ -1,7 +1,9 @@
 from django.core import serializers
 import json
 from django.http import HttpResponse, JsonResponse, FileResponse, Http404, StreamingHttpResponse
-from .models import User
+from .models import User, UserToken
+import uuid
+from testapp import models
 from datetime import datetime
 # Create your views here.
 from django.views.decorators.http import require_http_methods
@@ -9,21 +11,6 @@ from django.views.decorators.http import require_http_methods
 
 def object_to_json(obj):
     return dict([(kk, obj.__dict__[kk]) for kk in obj.__dict__.keys() if kk != "_state"])
-
-
-@require_http_methods(["GET"])
-def show_users(request):
-    response = {}
-    try:
-        users = User.objects.filter()
-        response['list'] = json.loads(serializers.serialize("json", users))
-        response['msg'] = 'success'
-        response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
-        response['error_num'] = 1
-
-    return JsonResponse(response)
 
 
 @require_http_methods(["POST"])
@@ -58,32 +45,20 @@ def register(request):
 
 
 @require_http_methods(["GET"])
-def searchinfo(request, id):
-    id = int(id)
-    response = {}
-    try:
-        u = User.objects.get(uid=id)
-        response['info'] = object_to_json(u)
-        response['msg'] = 'success'
-        response['error_num'] = 0
-    except Exception as e:
-        response['msg'] = str(e)
-        response['error_num'] = 1
-
-    return JsonResponse(response)
-
-
-@require_http_methods(["GET"])
 def login(request):
     response = {}
     try:
         name = request.GET['name']
         password = request.GET['password']
         if User.objects.filter(name=name):
-            user=User.objects.get(name=name)
-            if user.password==password:
+            user = User.objects.get(name=name)
+            if user.password == password:
+                token = uuid.uuid4()
+                models.UserToken.objects.update_or_create(user=user, defaults={'token': token})
                 response['msg'] = "login successfully!"
                 response['state'] = 1
+                response['name'] = name
+                response['token'] = token
             else:
                 response['msg'] = "Wrong username or password,try again!"
                 response['state'] = 2
@@ -94,4 +69,50 @@ def login(request):
         response['msg'] = str(e)
         response['state'] = 4
 
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def myinfo(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                response['msg'] = "success"
+                response['Nick'] = u.name
+                response['Sex'] = u.gender
+                response['Birthday'] = u.birthday
+                response['Email'] = u.email
+            else:
+                response['msg'] = "cookie 过期了!"
+        else:
+            response['msg'] = "不存在这样的用户名！"
+    except Exception as e:
+        response['msg'] = str(e)
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def Authentication(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                response['state'] = 1
+                response['msg'] = "起飞！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
     return JsonResponse(response)

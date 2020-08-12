@@ -41,6 +41,19 @@ import axios from 'axios'
     created() {
       this.username=this.$route.query.username
       this.password=this.$route.query.password
+      axios({
+        url:"http://127.0.0.1:8000/Authentication",
+        methods: "get",
+        params:{
+          name:this.$store.state.name,
+          token:this.$store.state.token
+        }
+      }).then(res =>{
+        console.log(res)
+        if(res.data.state === 1)
+        {
+          this.$router.push('/tools/home')
+        }})
   },
     methods:{
       doRegister(){
@@ -56,9 +69,10 @@ import axios from 'axios'
             password:this.password
           }
         }).then(res=>{
-          alert(res.data.msg)
+          console.log(res)
           if(res.data.state===1)
           {
+            this.$store.commit('login',res)
             this.$router.push('/tools/home')
           }
 

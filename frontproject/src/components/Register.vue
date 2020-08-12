@@ -85,31 +85,6 @@ export default {
     }
     ,
     doSubmit() {
-      // if (this.password === this.password2) {
-      //   this.$router.push({
-      //     path: "/login",
-      //     query: {
-      //       username: this.username,
-      //       password: this.password
-      //     }
-      //   });
-      //   this.$message({
-      //     showClose: true,
-      //     message: "注册成功！",
-      //     type: "success"
-      //   });
-      // } else {
-      //   this.$message({
-      //     showClose: true,
-      //     message: "注册失败！",
-      //     type: "error"
-      //   });
-      //   return {
-      //     username: "",
-      //     password: "",
-      //     password2: ""
-      //   };
-      // }
       if(!this.judgeUserName(this.username))
       {
         this.$message({
@@ -174,6 +149,8 @@ export default {
       }
 
     }
+  },
+  created() {
   }
 };
 </script>

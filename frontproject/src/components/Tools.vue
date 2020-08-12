@@ -9,12 +9,13 @@
 <script>
     import TopTools from "./TopTools";
     import Aside from "./Aside";
+    import Editfile from "./Editfile";
     export default {
         name: "Tools",
-      components: {Aside, TopTools}
+      components: {Editfile, Aside, TopTools},
+      created() {
+      }
     }
 </script>
-
-<style scoped>
-
+<style>
 </style>

@@ -8,12 +8,17 @@ class User(models.Model):
     gender = models.BooleanField(default=False)  # 性别
     email = models.EmailField(blank=False, null=False)
     birthday = models.DateField(default="2000-1-1")
-    password = models.CharField(max_length=30, null=False, blank=False,default="a12345678")
+    password = models.CharField(max_length=30, null=False, blank=False, default="a12345678")
     tags = models.TextField(default="")
     uphoto = models.ImageField(upload_to="uphoto/", default="uphoto/default.jpg")  # 头像
 
     def __str__(self):
         return self.name
+
+
+class UserToken(models.Model):
+    user = models.OneToOneField(to='User',on_delete=models.CASCADE)
+    token = models.CharField(max_length=64)
 
 
 class Article(models.Model):
