@@ -1,34 +1,34 @@
 <template>
   <div class="total">
-    <div style="width: 70%;margin-top: 30px;float: left">
-      <div class="info" style="float: left">
+    <div class="info" style="width: 70%;margin-top: 30px;float: left">
+      <div style="float: left">
         <h1 style="float: left">个人资料</h1>
         <el-button class="edit_button" type="primary" v-show="!isEdit" @click="clickedit_info()">修改信息</el-button>
         <el-button class="edit_button" type="primary" v-show="isEdit" @click="submitForm('ruleForm')">保存信息
         </el-button>
         <el-button @click="resetForm('ruleForm')" v-show="isEdit">重置</el-button>
       </div>
-      <div class="info" style="border-bottom:2px solid #CCC;padding-top: 100px"></div>
-      <div class="info" v-show="!isEdit" style="padding-top: 30px">
+      <div style="border-bottom:2px solid #CCC;padding-top: 100px"></div>
+      <div v-show="!isEdit" style="padding-top: 30px">
         <i class="el-icon-picture-outline" style="float: left;font-size:30px; margin-top: 33px; margin-right:10px"></i>
         <h3 style="float: left;margin-top:35px">头像：</h3>
         <img class="photo" src="../assets/logo.png" alt="">
       </div>
-      <div class="info" v-show="!isEdit" style="padding-top: 100px">
+      <div v-show="!isEdit" style="padding-top: 100px">
         <div>
           <i class="el-icon-view" style="float: left;font-size:30px; margin-top: 17px; margin-right:10px"></i>
           <h3 style="float: left">昵称：{{Nick}}</h3>
         </div>
       </div>
-      <div class="info" v-show="!isEdit" style="padding-top: 70px">
+      <div v-show="!isEdit" style="padding-top: 70px">
         <i class="el-icon-user" style="float: left;font-size:30px; margin-top: 17px; margin-right:10px"></i>
         <h3 style="float: left">性别：{{Sex}}</h3>
       </div>
-      <div class="info" v-show="!isEdit" style="padding-top: 70px">
+      <div v-show="!isEdit" style="padding-top: 70px">
         <i class="el-icon-present" style="float: left;font-size:30px; margin-top: 17px; margin-right:10px"></i>
         <h3 style="float: left">生日：{{Birthday}}</h3>
       </div>
-      <div class="info" v-show="!isEdit" style="padding-top: 70px">
+      <div v-show="!isEdit" style="padding-top: 70px">
         <i class="el-icon-school" style="float: left;font-size:30px; margin-top: 17px; margin-right:10px"></i>
         <h3 style="float: left">邮箱：{{Email}}</h3>
       </div>

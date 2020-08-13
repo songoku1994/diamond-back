@@ -87,15 +87,41 @@ const routes= [
           title:"我的文档-金刚石文档",
           requireAuth:true
         }
+      },
+      {
+        path:'searchfile',
+        component:()=>import('../components/SearchFile'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
+      },
+      {
+        path:'usercollection',
+        component:()=>import('../components/UserCollection'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
+      },
+      {
+        path:'ownfile',
+        component:()=>import('../components/ownfile'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
+      },
+      {
+        path:'worktrend',
+        component:()=>import('../components/Worktrend'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
       }
+
     ]
-  },
-  {
-    path:'/test',
-    component:()=>import('../components/test1'),
-    meta:{
-      title:"测试"
-    }
   },
 
 ]

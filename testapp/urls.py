@@ -13,4 +13,10 @@ urlpatterns = [
                   path('myinfo', views.myinfo),
                   path('login', views.login),
                   path('Authentication', views.Authentication),
+                  path('uploadNewArticle', views.uploadNewArticle),
+                  path('judgeRepetitiveArticleName',views.judgeRepetitiveArticleName),
+                  path('getAllArticle', views.getAllArticle),
+                  path('getArticleContent/<int:id>', views.getArticleContent),
+                  path('deleteArticle/<int:id>', views.deleteArticle),
+
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

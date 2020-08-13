@@ -19,8 +19,12 @@
             </template>
             <el-menu-item-group>
               <el-menu-item v-for="(item,i) in zone" :key="i" :index="item.id" @click="handle(item.url)">
-                <i :class="item.icon"></i>
-                <span slot="title">{{item.title}}</span>
+                <div>
+                  <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                  <span slot="title">{{item.title}}</span>
+                  <el-button type="text" icon="el-icon-circle-plus" v-if="item.id==='4-4'" @click="NewFile"></el-button>
+                  <span v-if="item.id!='4-4'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </div>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
@@ -31,28 +35,37 @@
 </template>
 
 <script>
+  import NewFile from "./NewFile";
   export default {
     name: "Aside",
     data() {
       return{
         name: [
-          {icon: "el-icon-edit", title: "工作台", url:'/tools/home'},
-          {icon: "el-icon-share", title: "啦啦啦啦", url:'/tools/home'},
-          {icon: "el-icon-delete", title: "导航三", url:'/tools/home'},
-          {icon: "el-icon-user", title: "导航四", url:'/tools/home'},
+          {icon: "el-icon-edit", title: "工作台", url:'/tools/home',id:"1"},
+          {icon: "el-icon-share", title: "团队管理", url:'/tools/home',id:"2"},
+          {icon: "el-icon-delete", title: "导航三", url:'/tools/home',id:"3"},
+          {icon: "el-icon-user", title: "导航四", url:'/tools/home',id:"4"},
         ],
         zone: [
           {icon: "el-icon-edit", title: "个人信息", url:'/tools/userinfo', id:"4-1"},
           {icon: "el-icon-share", title: "我的团队", url:'/tools/userteam', id:"4-2"},
-          {icon: "el-icon-share", title: "我的消息", url:'/tools/usermessage', id:"4-3"},
-          {icon: "el-icon-s-claim", title: "我的文档", url:'/tools/userfile', id:"4-4"},
+          {icon: "el-icon-s-comment", title: "我的消息", url:'/tools/usermessage', id:"4-3"},
+          {title: "我的文档", url:'/tools/userfile', id:"4-4"},
           {icon: "el-icon-delete", title: "我的回收站", url:'/tools/bin', id:"4-5"},
         ],
-        activeIndex: this.active,
+        activeIndex: "1",
         openson: this.isson === "true",
       }
     },
     methods: {
+      NewFile(){
+        NewFile.data().NewFile.Title=''
+        NewFile.data().NewFile.SimpleMessage=''
+        NewFile.data().NewFile.TeamId=-1
+        NewFile.data().NewFile.Authority=0
+        NewFile.data().NewFile.Revise=0
+        NewFile.data().Visible=true
+      },
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },
@@ -63,6 +76,12 @@
         if(this.$route.path != url)
           this.$router.push(url)
       },
+      newfile() {
+        this.$notify({
+          title: '提示',
+          message: '这是一条不会自动关闭的消息',
+        });
+      }
     },
     created() {
 
@@ -71,6 +90,13 @@
 </script>
 
 <style scope>
+  .newbutton {
+    width: 30px;
+    height: 30px;
+    background-color: rgb(211, 211, 211);
+    color:darkblue;
+  }
+
   #test {
     text-align: center;
   }

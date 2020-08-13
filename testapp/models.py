@@ -11,13 +11,14 @@ class User(models.Model):
     password = models.CharField(max_length=30, null=False, blank=False, default="a12345678")
     tags = models.TextField(default="")
     uphoto = models.ImageField(upload_to="uphoto/", default="uphoto/default.jpg")  # 头像
+    createtime = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
 
 class UserToken(models.Model):
-    user = models.OneToOneField(to='User',on_delete=models.CASCADE)
+    user = models.OneToOneField(to='User', on_delete=models.CASCADE)
     token = models.CharField(max_length=64)
 
 
@@ -26,6 +27,14 @@ class Article(models.Model):
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(blank=False, null=False, max_length=100)
     content = HTMLField()
+    tid = models.IntegerField(default=-1)
+    message = models.CharField(default="", max_length=200)
+    isTeamarticle = models.BooleanField(default=False)
+    isAbandoned = models.BooleanField(default=False)
+    visibility = models.IntegerField(default=1)
+    commentGranted = models.BooleanField(default=True)
+    createtime = models.DateTimeField(auto_now_add=True)
+    lastedittime = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -34,20 +43,20 @@ class Article(models.Model):
 class Team(models.Model):
     tid = models.AutoField(primary_key=True)
     creatorid = models.IntegerField()
-    uidlist = models.ManyToManyField(User)
+    createtime = models.DateTimeField(auto_now_add=True)
     tname = models.CharField(blank=False, null=False, max_length=100)
+    tIntro = models.CharField(max_length=200)
+    Teamphoto = models.ImageField(upload_to="Tphoto/", default="Tphoto/default.jpg")  # 头像
 
     def __str__(self):
         return self.tname
 
 
 class MemberShip(models.Model):
-    tid = models.ForeignKey(Team, on_delete=models.CASCADE)
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    isManager = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = (("tid", "uid"),)
+    mid = models.AutoField(primary_key=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    participateTime = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.tid) + '/' + str(self.uid)
@@ -55,6 +64,53 @@ class MemberShip(models.Model):
 
 class Comment(models.Model):
     cid = models.AutoField(primary_key=True)
-    aid = models.ForeignKey(Article, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = HTMLField()
+    content = models.CharField(max_length=200)
+    commentTime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.cid)
+
+
+class Tocomment(models.Model):
+    tcid = models.AutoField(primary_key=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    commentTime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.tcid)
+
+
+class Favorite(models.Model):
+    fid = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    favoriteTime = models.DateTimeField(auto_now_add=True)
+
+
+# browserHistory(BHid,uid,aid，time)
+class BrowerHistory(models.Model):
+    BHid = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    browertime = models.DateTimeField(auto_now=True)
+
+
+class PersonalMessage(models.Model):
+    pmid = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=500)
+    time = models.DateTimeField(auto_now_add=True)
+    checked = models.BooleanField(default=False)
+
+
+class TeamMessage(models.Model):
+    tmid = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    content = models.CharField(max_length=500)
+    time = models.DateTimeField(auto_now_add=True)
+    checked = models.BooleanField(default=False)

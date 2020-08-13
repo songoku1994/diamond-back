@@ -1,24 +1,28 @@
 <template>
   <div>
-    <div style="width: 70%;margin-top: 30px;float: left">
-      <div class="info" style="float: left">
+    <div class="info" style="width: 70%;margin-top: 30px;float: left">
+      <div style="float: left">
         <h1 style="float: left">我的团队</h1>
       </div>
-      <div class="info" style="border-bottom:2px solid #CCC;padding-top: 100px"></div>
+      <div style="border-bottom:2px solid #CCC;padding-top: 100px"></div>
       <br>
       <div  v-for="(i,index) in TeamData" style="float: left">
         <div v-for="j in 15" style="float: left">&nbsp;</div>
-        <el-card class="box-card" shadow="hover">
+        <el-card class="box-card" shadow="hover" @click="quit(index)">
           <div slot="header" class="clearfix" style="height: 30px">
             <div style="float: left;font-size: 20px">{{i.name}}</div>
             <div style="float: right">
             </div>
           </div>
           <el-image src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-image>
-          <div style="float: right">
-            <el-button type="text" @click="MoreMessage(index)" style="font-size: 15px">详情</el-button>
-            <el-button type="text" style="color:red;font-size: 15px" @click="quit(index)">退出</el-button>
-          </div>
+          <el-dropdown style="float: right" @command="ShowMore" >
+            <span style="cursor: pointer;color:#409EFF"><i class="el-icon-more"></i></span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="{name:Jump,data:index}">团队文档</el-dropdown-item>
+              <el-dropdown-item :command="{name:MoreMessage,data:index}">团队详情</el-dropdown-item>
+              <el-dropdown-item :command="{name:Quit,data:index}" style="color: #f56c6c">退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </el-card>
         <br><br><br>
       </div>
@@ -86,10 +90,11 @@
             ShowData:{name:'',MoreMessage:''},
             NewTeamData:{name:'',MoreMessage:''},
             NewMessageVisible:false,
+            ButtonVisible:false,
           }
       },
       methods:{
-        quit(index){
+        Quit(index){
             this.$confirm('此操作将退出团队, 是否继续?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -121,6 +126,7 @@
           this.ShowMessageVisible=true
           this.ShowData.name=this.TeamData[index].name
           this.ShowData.MoreMessage=this.TeamData[index].MoreMessage
+          return 0
         },
         NewTeam(){
           this.NewTeamData.name=''
@@ -134,6 +140,12 @@
             type:"success",
             message:'创建成功',
           })
+        },
+        ShowMore(object){
+          object.name(object.data)
+        },
+        Jump(index){
+
         },
       }
     }

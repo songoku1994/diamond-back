@@ -3,18 +3,17 @@
     <TopTools></TopTools>
     <Aside></Aside>
     <router-view></router-view>
+    <NewFile></NewFile>
   </div>
 </template>
 
 <script>
     import TopTools from "./TopTools";
     import Aside from "./Aside";
-    import Editfile from "./Editfile";
+    import NewFile from "./NewFile";
     export default {
         name: "Tools",
-      components: {Editfile, Aside, TopTools},
-      created() {
-      }
+      components: {NewFile, Aside, TopTools},
     }
 </script>
 <style>
