@@ -100,9 +100,14 @@ class BrowerHistory(models.Model):
 
 
 class PersonalMessage(models.Model):
+    # 个人的消息应该包括：被邀请加入团队，被踢出团队，文章被评论，文章被转发，评论被评论，有人接受了我的邀请，
+    # 有人拒绝了我的邀请，有人自己退出了我的团队
     pmid = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
+    tid = models.IntegerField(default=-1)
+    aid =models.IntegerField(default=-1)
+    isInviteMessage = models.BooleanField(default=False)
     time = models.DateTimeField(auto_now_add=True)
     checked = models.BooleanField(default=False)
 

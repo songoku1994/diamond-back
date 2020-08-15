@@ -21,7 +21,7 @@
         <div style="flex: 1"></div>
         <el-button-group style="float: right">
           <el-button type="primary" style="width: 120px" @click="submit()"
-            >保存</el-button
+          >保存</el-button
           >
           <el-button type="danger" style="width: 120px" @click="subexit()">保存并退出</el-button>
         </el-button-group>
@@ -31,34 +31,36 @@
 </template>
 
 <script>
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-import Quill from "quill";
-import { quillEditor } from "vue-quill-editor";
-import { ImageDrop } from "quill-image-drop-module";
-import ImageResize from "quill-image-resize-module";
-Quill.register("modules/imageDrop", ImageDrop);
-Quill.register("modules/imageResize", ImageResize);
+  import "quill/dist/quill.core.css";
+  import "quill/dist/quill.snow.css";
+  import "quill/dist/quill.bubble.css";
+  import Quill from "quill";
+  import { quillEditor } from "vue-quill-editor";
+  import { ImageDrop } from "quill-image-drop-module";
+  import ImageResize from "quill-image-resize-module";
+  Quill.register("modules/imageDrop", ImageDrop);
+  Quill.register("modules/imageResize", ImageResize);
 
-//自定义字体类型
-var fonts = [
-  "SimSun",
-  "SimHei",
-  "Microsoft-YaHei",
-  "KaiTi",
-  "FangSong",
-  "Arial",
-  "Times-New-Roman",
-  "sans-serif"
-];
-var Font = Quill.import("formats/font");
-Font.whitelist = fonts; //将字体加入到白名单
-Quill.register(Font, true);
-import axios from 'axios'
-export default {
-  name: "editfile",
-  created() {
+  //自定义字体类型
+  var fonts = [
+    "SimSun",
+    "SimHei",
+    "Microsoft-YaHei",
+    "KaiTi",
+    "FangSong",
+    "Arial",
+    "Times-New-Roman",
+    "sans-serif"
+  ];
+  var Font = Quill.import("formats/font");
+  Font.whitelist = fonts; //将字体加入到白名单
+  Quill.register(Font, true);
+  import axios from 'axios'
+  export default {
+    name: "editfile",
+    created() {
+      console.log('NNNEEEWWW!!!')
+      console.log(this.$route.query.NewFile)
       if(this.$route.query.NewFile.aid>0)
       {
         console.log(this.$route.query.NewFile);
@@ -77,67 +79,66 @@ export default {
       }
 
 
-  },
-  data() {
-    return {
-      contentCode: "",
-      content:'',
-      editorOption: {
-        modules: {
-          toolbar: [
-            ["bold", "italic", "underline", "strike", "image"],
-            ["formula", "clean"],
-            ["blockquote", "code-block"],
-            [{ list: "ordered" }, { list: "bullet" }],
-            [{ script: "sub" }, { script: "super" }],
-            [{ size: ["small", false, "large", "huge"] }],
-            [{ font: fonts }],
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
-            [{ color: [] }, { background: [] }],
-            [{ align: [] }],
-            [{ direction: "rtl" }]
-          ],
-          history: {
-            delay: 1000,
-            maxStack: 50,
-            userOnly: false
-          },
-          imageDrop: true,
-          imageResize: {
-            displayStyles: {
-              backgroundColor: "black",
-              border: "none",
-              color: "white"
+    },
+    data() {
+      return {
+        contentCode: '',
+        content:'',
+        editorOption: {
+          modules: {
+            toolbar: [
+              ["bold", "italic", "underline", "strike", "image"],
+              ["formula", "clean"],
+              ["blockquote", "code-block"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              [{ script: "sub" }, { script: "super" }],
+              [{ size: ["small", false, "large", "huge"] }],
+              [{ font: fonts }],
+              [{ header: [1, 2, 3, 4, 5, 6, false] }],
+              [{ color: [] }, { background: [] }],
+              [{ align: [] }],
+              [{ direction: "rtl" }]
+            ],
+            history: {
+              delay: 1000,
+              maxStack: 50,
+              userOnly: false
             },
-            modules: ["Resize", "DisplaySize", "Toolbar"]
-          }
-        },
-        placeholder: "输入内容........"
-      }
-    };
-  },
-  components: {
-    quillEditor
-  },
-  methods: {
-    onEditorReady(editor) {
-      // 准备编辑器
-      console.log("111");
+            imageDrop: true,
+            imageResize: {
+              displayStyles: {
+                backgroundColor: "black",
+                border: "none",
+                color: "white"
+              },
+              modules: ["Resize", "DisplaySize", "Toolbar"]
+            }
+          },
+          placeholder: "输入内容........"
+        }
+      };
     },
-    onEditorBlur() {
-      // 失去焦点事件
-      console.log("111");
+    components: {
+      quillEditor
     },
-    onEditorFocus() {
-      // 获得焦点事件
-      console.log("222");
-    },
-    onEditorChange() {
-      // 内容改变事件
-      console.log(this.content);
-    },
-    submit() {
-      console.log(this.$route.query)
+    methods: {
+      onEditorReady(editor) {
+        // 准备编辑器
+        console.log("111");
+      },
+      onEditorBlur() {
+        // 失去焦点事件
+        console.log("111");
+      },
+      onEditorFocus() {
+        // 获得焦点事件
+        console.log("222");
+      },
+      onEditorChange() {
+        // 内容改变事件
+        console.log(this.content);
+      },
+      submit() {
         let formData = new FormData();
         formData.append('name', this.$store.state.name,);
         formData.append( 'token',this.$store.state.token);
@@ -147,6 +148,7 @@ export default {
         formData.append('message',this.$route.query.NewFile.SimpleMessage);
         formData.append('visibility',this.$route.query.NewFile.Authority);
         formData.append('commentGranted',this.$route.query.NewFile.Revise);
+        formData.append('aid',this.$route.query.NewFile.aid);
         let config = {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -155,6 +157,7 @@ export default {
         axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
         {
           console.log(res)
+          this.$route.query.NewFile.aid=res.data.aid
           if(res.data.state === 1)
           {
             alert("上传成功！")
@@ -162,15 +165,15 @@ export default {
         })
 
 
-    },
-    subexit(){
-      this.submit()
-      if(this.$route.query.NewFile.TeamId===-1)
-      {
-        this.$router.push('/tools/userfile')
-        location.reload()
+      },
+      subexit(){
+        this.submit()
+        if(this.$route.query.NewFile.TeamId===-1)
+        {
+          this.$router.push('/tools/userfile')
+          location.reload()
+        }
       }
     }
-  }
-};
+  };
 </script>

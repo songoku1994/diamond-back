@@ -11,11 +11,15 @@
         <el-table-column prop="fields.createtime" label="创建日期"></el-table-column>
         <el-table-column width="217">
           <el-button-group slot-scope="scope" >
-            <el-button type="primary" @click="Recover(scope.row)">恢复文件</el-button>
-            <el-button type="danger" @click="FinalDelete(scope.row)">彻底删除</el-button>
+            <el-button type="primary" @click="Recover(scope.$index)">恢复文件</el-button>
+            <el-button type="danger" @click="FinalDelete(scope.$index)">彻底删除</el-button>
           </el-button-group>
         </el-table-column>
       </el-table>
+    </div>
+    <div style="float: right;margin-top: 30px">
+      <el-button type="primary" @click="AllRecover">全部恢复</el-button>
+      <el-button type="danger" @click="AllDelete">全部删除</el-button>
     </div>
   </div>
 </template>
@@ -53,21 +57,21 @@ export default {
     TimeFormat(str){
       return str.substring(0,10)+" "+str.substring(11,19)
     },
-    Recover(row) {
+    Recover(index) {
       this.$confirm('此操作将恢复该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         axios({
-          url:'/articleRecover/'+row.pk,
+          url:'/articleRecover/'+this.BinData[index].pk,
           params:{
             name: this.$store.state.name,
             token: this.$store.state.token,
           }
         }).then(res=>{
           // console.log(res)
-          this.BinData.splice(this.FindRow(row),1)
+          this.BinData.splice(index,1)
           this.$message({
             type: 'success',
             message: '恢复成功!'
@@ -80,27 +84,27 @@ export default {
         });
       });
     },
-    FinalDelete(row){
+    FinalDelete(index){
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        /*这里写后端代码（彻底删除）
-
-
-
-
-
-
-
-
-       */
-        this.BinData.splice(this.FindRow(row),1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
+        console.log(this.BinData[index])
+        axios({
+          url:'completelyDeleteArticle/'+this.BinData[index].pk,
+          params:{
+            name: this.$store.state.name,
+            token: this.$store.state.token,
+          }
+        }).then(res=>{
+          console.log(res)
+          this.BinData.splice(index,1)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -108,17 +112,9 @@ export default {
         });
       });
     },
-    FindRow(row){
-      for(let i=0;i<this.BinData.length;i++){
-        if(row.fields.content===this.BinData[i].fields.content&&row.fields.createtime===this.BinData[i].fields.createtime){
-          return i
-        }
-      }
-      return -1
-    },
-    MoreMessage(row){
+    MoreMessage(index){
       /*这里写后端代码（查看详情信息）
-      将this.ShowMessage的值变为this.BinData[this.Find(row)]的详情信息
+      将this.ShowMessage的值变为this.BinData[index]的详情信息
 
 
 
@@ -127,26 +123,24 @@ export default {
 
 
        */
-      this.ShowData=this.BinData[this.FindRow(row)]
+      this.ShowData=this.BinData[index]
       this.DialogVisible=true
     },
     AllDelete(){
-
       this.$confirm('此操作将删除所有文档, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        /*这里写后端代码（删除全部文档）
-
-
-
-
-
-
-
-
-       */
+        for(let i of this.BinData){
+          axios({
+            url:'completelyDeleteArticle/'+i.pk,
+            params:{
+              name: this.$store.state.name,
+              token: this.$store.state.token,
+            }
+          })
+        }
         this.BinData.splice(0,this.BinData.length)
         this.$message({
           type: 'success',
@@ -160,22 +154,20 @@ export default {
       });
     },
     AllRecover(){
-
       this.$confirm('此操作将恢复所有文档, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        /*这里写后端代码（恢复全部文档）
-
-
-
-
-
-
-
-
-       */
+        for(let i of this.BinData){
+          axios({
+            url:'/articleRecover/'+i.pk,
+            params:{
+              name: this.$store.state.name,
+              token: this.$store.state.token,
+            }
+          })
+        }
         this.BinData.splice(0,this.BinData.length)
         this.$message({
           type: 'success',

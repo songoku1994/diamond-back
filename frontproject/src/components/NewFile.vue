@@ -37,7 +37,7 @@ export default {
   props:['Visible'],
   data(){
     return{
-      NewFile:{Title:null,SimpleMessage:null,TeamId:-1,Authority:0,Revise:0,aid:-1},
+      NewFile:{Title:'',SimpleMessage:'',TeamId:-1,Authority:0,Revise:0,aid:-1},
       Authority:['仅自己','所有人可见','所有人可编辑'],
     }
   },
@@ -65,7 +65,10 @@ export default {
         }
         this.$emit('cancel')
         console.log(this.NewFile)
-        this.$router.push({path:'/tools/editfile',query:{NewFile:this.NewFile}})
+        this.$router.push({
+          path:'/tools/editfile',
+          query:{NewFile:this.NewFile}
+        })
       }).catch(res=>{
         this.$message({type:"warning",message:res})
       })

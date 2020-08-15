@@ -6,27 +6,36 @@
     <div style="border-bottom:2px solid #CCC;padding-top: 100px"></div>
     <div >
       <el-table :data="AllFile" stripe border>
-        <el-table-column prop="Name" label="文件名" ></el-table-column>
+        <el-table-column prop="Title" label="文件名" ></el-table-column>
         <el-table-column prop="Author" label="作者"></el-table-column>
         <el-table-column prop="LastViewDate" label="上次浏览日期" ></el-table-column>
         <el-table-column prop="CreateDate" label="创建日期"></el-table-column>
-        <el-table-column width="225">
+        <el-table-column width="170">
           <template slot-scope="scope">
-            <el-button type="primary" @click="EditFile(scope.row)" icon="el-icon-edit" circle></el-button>
-            <el-button type="info" @click="ConfigFile(scope.row)" icon="el-icon-setting" circle></el-button>
-            <el-button type="success" @click="CollectFile(scope.row)" icon="el-icon-star-on" circle></el-button>
-            <el-button type="danger" @click="DeleteFile(scope.row)" icon="el-icon-delete" circle></el-button>
+            <el-button type="primary" @click="EditFile(scope.$index)" icon="el-icon-edit" circle></el-button>
+            <el-button type="success" @click="CollectFile(scope.$index)" :icon="Star(scope.$index)" circle></el-button>
+            <el-button type="danger" @click="DeleteFile(scope.$index)" icon="el-icon-delete" circle></el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
+    <ConfigOldFile v-if="ConfigOldFileVisible"
+                   :visible.sync="ConfigOldFileVisible"
+                   :title="SelectArticle.Title"
+                   :simple-message="SelectArticle.SimpleMessage"
+                   :article-authority="SelectArticle.Authority"
+                   :revise="SelectArticle.Revise"
+                   :aid="SelectArticle.aid"
+                   @cancel="ConfigOldFileVisible=false"></ConfigOldFile>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+  import axios from 'axios'
+  import ConfigOldFile from "./ConfigOldFile";
   export default {
     name: "UserFile",
+    components: {ConfigOldFile},
     created() {
       axios({
         url:"http://127.0.0.1:8000/getAllArticle",
@@ -41,7 +50,6 @@ import axios from 'axios'
         {
           console.log(typeof a.fields.title)
           let obj = {}
-          obj.Name = a.fields.title
           obj.LastViewDate = '2020/8/11 18:10'
           obj.CreateDate = this.TimeFormat(a.fields.createtime)
           obj.Author = this.$store.state.name
@@ -57,54 +65,52 @@ import axios from 'axios'
     },
     data(){
       return{
-        RecentFile:[
-          {Name:'北航帝国简史',LastViewDate:'2020/8/11 18:10',CreateDate:'2010/2/30',Author:'徐惠彬'},
-        ],
+        ConfigOldFileVisible:false,
+        SelectArticle:{},
         AllFile:[
-          // {Name:'北航帝国简史',LastViewDate:'2020/8/11 18:10',CreateDate:'2010/2/30',Author:'徐惠彬'},
-          // {Name:'毛泽东选集',LastViewDate:'2020/8/11 20:21',CreateDate:'1944/1/1',Author:'毛泽东'},
+          // {Title:'北航帝国简史',LastViewDate:'2020/8/11 18:10',CreateDate:'2010/2/30',Author:'徐惠彬',Collected:false},
+          // {Title:'毛泽东选集',LastViewDate:'2020/8/11 20:21',CreateDate:'1944/1/1',Author:'毛泽东',Collected:true},
         ],
         username:'我',
       }
     },
     methods:{
-      FindFile(row){
-        for(let i=0;i<this.AllFile.length;i++)
-        {
-          if(row.Name===this.AllFile[i].Name&&row.LastViewDate===this.AllFile[i].LastViewDate&&row.CreateDate===this.AllFile[i].CreateDate&&row.Author===this.AllFile[i].Author){
-            return i
-          }
-        }
-        return -1
+      Star(index){
+        if(this.AllFile[index].Collected===true)
+          return 'el-icon-star-on'
+        else
+          return 'el-icon-star-off'
       },
-    TimeFormat(str){
+      TimeFormat(str){
         return str.substring(0,10)+" "+str.substring(11,19)
-    },
-      EditFile(row){
-        let i=this.FindFile(row)
-        console.log(this.AllFile[i].aid)
-
-        this.$router.push({
-          path:'/tools/editfile',
-          query:{
-            NewFile:this.AllFile[i]
-          }
-        })
       },
-      DeleteFile(row){
+      EditFile(index){
+        let i=index
+        console.log(this.AllFile[i].aid)
+        this.SelectArticle=this.AllFile[i]
+        console.log(this.SelectArticle)
+        this.ConfigOldFileVisible=true
+      //   this.$router.push({
+      //     path:'/tools/editfile',
+      //     query:{
+      //       NewFile:this.AllFile[i]
+      //     }
+      //   })
+      },
+      DeleteFile(index){
         this.$confirm('此操作将删除该文档, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           axios({
-            url:'/deleteArticle/'+this.AllFile[this.FindFile(row)].aid,
+            url:'/deleteArticle/'+this.AllFile[index].aid,
             params:{
               name:this.$store.state.name,
               token:this.$store.state.token
             }
           }).then(res=>{
-            this.AllFile.splice(this.FindFile(row),1)
+            this.AllFile.splice(index,1)
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -117,15 +123,12 @@ import axios from 'axios'
           });
         });
       },
-      ConfigFile(row){
-        console.log(row)
-      },
-      CollectFile(row){
+      CollectFile(index){
 
       }
 
 
-    }
+    },
   }
 </script>
 

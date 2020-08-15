@@ -21,6 +21,12 @@ urlpatterns = [
                   path('getAbandonedArticle', views.getAbandonedArticle),
                   path('articleRecover/<int:id>', views.articleRecover),
                   path('changeUserInfo', views.changeUserInfo),
-                  # path('createTeam',views.createTeam),
+                  path('createTeam',views.createTeam),
+                  path('completelyDeleteArticle/<int:id>', views.completelyDeleteArticle),
+                  path('getUserListByKey',views.getUserListByKey),
+                  path('getArticleListByKey',views.getArticleListByKey),
+                  path('inviteUserToTeam',views.inviteUserToTeam),
+                  path('createComment',views.createComment),
+                  path('AcceptToJoinTeam',views.AcceptToJoinTeam),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

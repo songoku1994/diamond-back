@@ -136,6 +136,14 @@ const routes= [
           requireAuth:true
         }
       },
+      {
+        path:'viewfile',
+        component:()=>import('../components/ViewFile'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
+      }
     ]
   },
 

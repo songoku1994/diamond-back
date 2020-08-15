@@ -2,7 +2,9 @@
 <!--  <div>-->
 <!--    <TopTools/>-->
 <!--    <Aside/>-->
-<!--    <TeamManage/>-->
+<!--&lt;!&ndash;    <UserFile></UserFile>&ndash;&gt;-->
+<!--&lt;!&ndash;    <TeamManage/>&ndash;&gt;-->
+<!--    <Bin/>-->
 <!--  </div>-->
     <router-view/>
 </template>
@@ -11,9 +13,11 @@
   import TopTools from "./components/TopTools";
   import Aside from "./components/Aside";
   import TeamManage from "./components/TeamManage";
+  import UserFile from "./components/UserFile";
+  import Bin from "./components/Bin";
   export default {
   name: 'App',
-    components:{TeamManage, Aside, TopTools, test}
+    components:{Bin, UserFile, TeamManage, Aside, TopTools, test}
 }
 
 </script>

@@ -157,6 +157,7 @@ export default {
       this.Birthday = res.data.Birthday;
       this.Email = res.data.Email;
       this.Image = res.data.imgurl;
+      this.Mood = res.data.tags;
     });
   },
   data() {
@@ -216,14 +217,14 @@ export default {
           formData.append("name", this.$store.state.name);
           formData.append("token", this.$store.state.token);
           formData.append("newname", this.ruleForm.nick);
-
-
-          
           formData.append("gender", (this.ruleForm.sex==="女").toString());
           formData.append("birthday", this.ruleForm.birthday);
           formData.append("newemail", this.ruleForm.email);
-          console.log(this.ruleForm.fileList[this.ruleForm.fileList.length-1].raw)
-          formData.append("uphoto",this.ruleForm.fileList[this.ruleForm.fileList.length-1].raw)
+          if(this.ruleForm.fileList.length!==0)
+          {
+            formData.append("uphoto",this.ruleForm.fileList[this.ruleForm.fileList.length-1].raw)
+          }
+          formData.append("tags",this.ruleForm.mood)
 
           let config = {
             headers: {
