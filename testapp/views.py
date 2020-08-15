@@ -86,6 +86,7 @@ def myinfo(request):  # 获取我的个人信息
                 response['Sex'] = u.gender
                 response['Birthday'] = u.birthday
                 response['Email'] = u.email
+                response['imgurl'] = "http://127.0.0.1:8000/media/" + str(u.uphoto)
             else:
                 response['msg'] = "cookie 过期了!"
         else:
@@ -119,7 +120,7 @@ def Authentication(request):  # 身份认证
 
 
 @require_http_methods(["POST"])
-def uploadNewArticle(request):  # 上传自己新建的文档  个人的和团队的(文件名相同会覆盖，不相同创建新的)
+def uploadNewArticle(request):  # 上传自己的文档  个人的和团队的(文件名相同会覆盖，不相同创建新的)
     response = {}
     try:
         name = request.POST.get('name')
@@ -134,22 +135,40 @@ def uploadNewArticle(request):  # 上传自己新建的文档  个人的和团�
         visibility = int(visibility)
         commentGranted = int(request.POST.get('commentGranted'))
         commentGranted = commentGranted > 0
-
+        print("------------------------------")
+        print(ifteam)
+        print(title)
         if u:  # 用户存在
             if UserToken.objects.get(user=u, token=token):  # 认证成功
-                article = Article()
-                response['state'] = 1
-                article.title = title
-                article.tid = ifteam
-                article.uid = u
-                article.content = content
-                article.visibility = visibility
-                article.commentGranted = commentGranted
-                article.message = message
-                if ifteam > 0:
-                    article.isTeamarticle = True
-                article.save()
-                response['msg'] = "起飞"
+                if ifteam == -1 and Article.objects.filter(tid=-1, title=title, uid=u):
+                    article = Article.objects.get(tid=ifteam, title=title, uid=u)
+                    print("77777777777777777777777777777777")
+                    article.content = content
+                    article.save()
+                    response['msg'] = "起飞"
+                    response['state'] = 1
+                elif ifteam >= 1 and Article.objects.filter(tid=ifteam, title=title):
+                    article = Article.objects.get(tid=ifteam, title=title)
+                    print("77777777777777777777777777777777")
+                    article.content = content
+                    article.save()
+                    response['msg'] = "起飞"
+                    response['state'] = 1
+                else:
+                    print("9999999999999999999999999999999999")
+                    article = Article()
+                    response['state'] = 1
+                    article.title = title
+                    article.tid = ifteam
+                    article.uid = u
+                    article.content = content
+                    article.visibility = visibility
+                    article.commentGranted = commentGranted
+                    article.message = message
+                    if ifteam > 0:
+                        article.isTeamarticle = True
+                    article.save()
+                    response['msg'] = "起飞"
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0
@@ -265,21 +284,20 @@ def getArticleContent(request, id):  # 获取文章的内容
 def deleteArticle(request, id):
     id = int(id)
     response = {}
-    print("----------------------------------")
     try:
         name = request.GET['name']
         token = request.GET['token']
         u = User.objects.get(name=name)
-        aid = request.GET['aid']
-        aid = int(aid)
+        aid = int(id)
+        print(aid)
         article = Article.objects.get(aid=aid)
         if u:
             if UserToken.objects.get(user=u, token=token):
                 if article:
-                    print("++++++++++++++++++++++++")
                     if article.uid == u or article.isTeamarticle == True and Team.objects.get(
                             tid=article.tid).creatorid == u.uid:
                         article.isAbandoned = True
+                        article.save()
                         response['state'] = 1
                         response['msg'] = "起飞！"
                     else:
@@ -288,6 +306,151 @@ def deleteArticle(request, id):
                 else:
                     response['state'] = 0
                     response['msg'] = "文章未找到！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def getAbandonedArticle(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                response['state'] = 1
+                articles = Article.objects.filter(uid=u, isAbandoned=True)
+                response['articles'] = json.loads(serializers.serialize("json", articles))
+                response['msg'] = "起飞"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def articleRecover(request, id):
+    id = int(id)
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        aid = int(id)
+        print(aid)
+        article = Article.objects.get(aid=aid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                if article:
+                    if article.uid == u or article.isTeamarticle == True and Team.objects.get(
+                            tid=article.tid).creatorid == u.uid:
+                        article.isAbandoned = False
+                        article.save()
+                        response['state'] = 1
+                        response['msg'] = "起飞！"
+                    else:
+                        response['state'] = 0
+                        response['msg'] = "宁无权恢复此文件！"
+                else:
+                    response['state'] = 0
+                    response['msg'] = "文章未找到！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+@require_http_methods(["POST"])
+def changeUserInfo(request):
+    response = {}
+    try:
+        name = request.POST.get('name')
+        token = request.POST.get('token')
+        u = User.objects.get(name=name)
+        newName = request.POST.get('newname')
+        newGender = request.POST.get('gender') == "true"
+        newBirthday = request.POST.get('birthday')
+        newEmail = request.POST.get('newemail')
+        uphoto = request.FILES.get('uphoto', None)
+        print(uphoto)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                if newName != name and User.objects.filter(name=newName):
+                    response['msg'] = "用户名已存在，请更换用户名"
+                    response['state'] = 0
+                elif newEmail != u.email and User.objects.filter(email=newEmail):
+                    response['msg'] = "邮箱已存在，请更换邮箱"
+                    response['state'] = 0
+                else:
+                    u.name = newName
+                    u.email = newEmail
+                    u.gender = newGender
+                    u.birthday = newBirthday
+                    u.tags = ""
+                    u.uphoto = uphoto
+                    u.save()
+                    response['msg'] = "修改成功！"
+                    response['newname'] = newName
+                    response['state'] = 1
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def createTeam(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        tname = request.GET['tname']
+        tintro = request.GET['tintro']
+        tphoto = request.FILES.get('tphoto', "")
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                if Team.objects.filter(tname=tname):
+                    response['msg'] = "团队名已存在"
+                    response['state'] = 0
+                else:
+                    team = Team()
+                    team.tname = tname
+                    team.tIntro = tintro
+                    team.Teamphoto = tphoto
+                    team.creatorid = u.uid
+                    team.save()
+                    membership = MemberShip()
+                    membership.user = u
+                    membership.team = team
+                    membership.save()
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0

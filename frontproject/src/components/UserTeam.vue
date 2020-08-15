@@ -5,12 +5,11 @@
         <h1 style="float: left">我的团队</h1>
       </div>
       <div style="border-bottom:2px solid #CCC;padding-top: 100px"></div>
-      <br>
-      <div  v-for="(i,index) in TeamData" style="float: left">
+      <div  v-for="(i,index) in TeamData" style="float: left;margin-top: 15px">
         <div v-for="j in 15" style="float: left">&nbsp;</div>
         <el-card class="box-card" shadow="hover" @click="quit(index)">
           <div slot="header" class="clearfix" style="height: 30px">
-            <div style="float: left;font-size: 20px">{{i.name}}</div>
+            <div style="float: left;font-size: 20px">{{i.TeamName}}</div>
             <div style="float: right">
             </div>
           </div>
@@ -24,21 +23,18 @@
             </el-dropdown-menu>
           </el-dropdown>
         </el-card>
-        <br><br><br>
       </div>
-      <div style="float: left">
+      <div style="float: left;margin-top: 45px">
         <div v-for="j in 15" style="float: left">&nbsp;</div>
         <el-button type="info" style="height: 300px;width: 280px;font-size:200px;float: left" icon="el-icon-plus" class="clearfix" @click="NewTeam"></el-button>
       </div>
-      <br>
     </div>
     <el-dialog
       :title="ShowData.name"
       :visible.sync="ShowMessageVisible"
       width="30%">
       <span style="font-size: 20px">团队口号:</span>
-      <br><br>
-      <div>{{ShowData.MoreMessage}}</div>
+      <div  style="margin-top: 30px">{{ShowData.MoreMessage}}</div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="ShowMessageVisible = false">确 定</el-button>
       </span>
@@ -48,13 +44,11 @@
       :visible.sync="NewMessageVisible"
       width="30%">
       <div style="width: 80%">
-        团队名称:<br><br>
-        <el-input placeholder="请输入团队名称" v-model="NewTeamData.name"></el-input>
+        团队名称:
+        <el-input placeholder="请输入团队名称" v-model="NewTeamData.name" style="margin-top: 30px"></el-input>
       </div>
-      <br><br>
-      <div>团队信息:</div>
-      <br>
-      <el-input placeholder="请输入团队信息" :rows="10" v-model="NewTeamData.MoreMessage" style="width: 80%" type="textarea"></el-input>
+      <div style="margin-top: 30px">团队信息:</div>
+      <el-input placeholder="请输入团队信息" :rows="10" v-model="NewTeamData.MoreMessage" style="width: 80%;margin-top: 15px" type="textarea"></el-input>
       <span slot="footer" class="dialog-footer">
       <el-button @click="NewMessageVisible=false">取 消</el-button>
       <el-button type="primary" @click="SubmitNewTeam(NewTeamData)">确 定</el-button>
@@ -81,10 +75,10 @@
       data(){
           return{
             TeamData:[
-              {name:'大北航帝国',MoreMessage:'我大北航帝国科学技术世界第一'},
-              {name:'大士谔书院',MoreMessage:'我大士谔书院科学技术世界第一'},
-              {name:'大软件学院',MoreMessage:'我大软件书院科学技术世界第一'},
-              {name:'大熊猫',MoreMessage:'我大熊猫科学技术世界第一'},
+              {TeamName:'大北航帝国',MoreMessage:'我大北航帝国科学技术世界第一',TeamId:1},
+              {TeamName:'大士谔书院',MoreMessage:'我大士谔书院科学技术世界第一',TeamId:2},
+              {TeamName:'大软件学院',MoreMessage:'我大软件书院科学技术世界第一',TeamId:3},
+              {TeamName:'大熊猫',MoreMessage:'我大熊猫科学技术世界第一',TeamId:4},
             ],
             ShowMessageVisible:false,
             ShowData:{name:'',MoreMessage:''},
@@ -145,7 +139,12 @@
           object.name(object.data)
         },
         Jump(index){
-
+          this.$router.push({
+            path:'/tools/teammanage/',
+            query:{
+              Team:this.TeamData[index]
+            }
+          })
         },
       }
     }

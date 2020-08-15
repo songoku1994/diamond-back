@@ -14,9 +14,13 @@ urlpatterns = [
                   path('login', views.login),
                   path('Authentication', views.Authentication),
                   path('uploadNewArticle', views.uploadNewArticle),
-                  path('judgeRepetitiveArticleName',views.judgeRepetitiveArticleName),
+                  path('judgeRepetitiveArticleName', views.judgeRepetitiveArticleName),
                   path('getAllArticle', views.getAllArticle),
                   path('getArticleContent/<int:id>', views.getArticleContent),
                   path('deleteArticle/<int:id>', views.deleteArticle),
+                  path('getAbandonedArticle', views.getAbandonedArticle),
+                  path('articleRecover/<int:id>', views.articleRecover),
+                  path('changeUserInfo', views.changeUserInfo),
+                  # path('createTeam',views.createTeam),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

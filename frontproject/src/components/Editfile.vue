@@ -4,6 +4,7 @@
       <el-aside style="width: 100%;height: 550px">
         <div>
           <quill-editor
+            class="ql-editor"
             v-model="content"
             style="height: 500px;"
             ref="myQuillEditor"
@@ -22,7 +23,7 @@
           <el-button type="primary" style="width: 120px" @click="submit()"
             >保存</el-button
           >
-          <el-button type="danger" style="width: 120px">保存并退出</el-button>
+          <el-button type="danger" style="width: 120px" @click="subexit()">保存并退出</el-button>
         </el-button-group>
       </el-footer>
     </el-container>
@@ -58,29 +59,29 @@ import axios from 'axios'
 export default {
   name: "editfile",
   created() {
-    if(this.$route.query.file!==undefined){
-      console.log(this.$route.query.file);
-      axios({
-        url:"http://127.0.0.1:8000/getArticleContent/"+this.$route.query.file.aid,
-        params: {
-          name:this.$store.state.name,
-          token: this.$store.state.token
-        }
-      }).then(
-        res => {
-          console.log(res.data)
-          this.content=res.data.content
-        }
-      )
-    }
-    else{
+      if(this.$route.query.NewFile.aid>0)
+      {
+        console.log(this.$route.query.NewFile);
+        axios({
+          url:"http://127.0.0.1:8000/getArticleContent/"+this.$route.query.NewFile.aid,
+          params: {
+            name:this.$store.state.name,
+            token: this.$store.state.token
+          }
+        }).then(
+          res => {
+            console.log(res.data)
+            this.content=res.data.content
+          }
+        )
+      }
 
-    }
+
   },
   data() {
     return {
       contentCode: "",
-      content:"asdfasdfsadfasdf",
+      content:'',
       editorOption: {
         modules: {
           toolbar: [
@@ -133,31 +134,42 @@ export default {
     },
     onEditorChange() {
       // 内容改变事件
-      console.log("333");
+      console.log(this.content);
     },
     submit() {
-      let formData = new FormData();
-      formData.append('name', this.$store.state.name,);
-      formData.append( 'token',this.$store.state.token);
-      formData.append('content',this.content);
-      formData.append('title',this.$route.query.NewFile.Title);
-      formData.append('message',this.$route.query.NewFile.SimpleMessage);
-      formData.append('ifteam',this.$route.query.NewFile.TeamId);
-      formData.append('visibility',this.$route.query.NewFile.Authority);
-      formData.append('commentGranted',this.$route.query.NewFile.Revise);
-      let config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      console.log(this.$route.query)
+        let formData = new FormData();
+        formData.append('name', this.$store.state.name,);
+        formData.append( 'token',this.$store.state.token);
+        formData.append('content',this.content);
+        formData.append('ifteam',this.$route.query.NewFile.TeamId);
+        formData.append('title',this.$route.query.NewFile.Title);
+        formData.append('message',this.$route.query.NewFile.SimpleMessage);
+        formData.append('visibility',this.$route.query.NewFile.Authority);
+        formData.append('commentGranted',this.$route.query.NewFile.Revise);
+        let config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      }
-      axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
-      {
-        if(res.data.state === 1)
+        axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
         {
-          this.$router.push('/tools/userfile')
-        }
-      })
+          console.log(res)
+          if(res.data.state === 1)
+          {
+            alert("上传成功！")
+          }
+        })
 
+
+    },
+    subexit(){
+      this.submit()
+      if(this.$route.query.NewFile.TeamId===-1)
+      {
+        this.$router.push('/tools/userfile')
+        location.reload()
+      }
     }
   }
 };

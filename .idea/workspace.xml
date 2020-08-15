@@ -40,14 +40,14 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/frontproject" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/media/uphoto" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\diamond\diamond\media\uphoto" />
       <recent name="D:\diamond\diamond\media\Tphoto" />
       <recent name="D:\diamond\diamond" />
-      <recent name="D:\diamond\diamond\media\uphoto" />
     </key>
   </component>
   <component name="RunManager">
@@ -99,7 +99,9 @@
       <workItem from="1597285390241" duration="12079000" />
       <workItem from="1597302848075" duration="19000" />
       <workItem from="1597316239244" duration="13000" />
-      <workItem from="1597323825728" duration="3048000" />
+      <workItem from="1597323825728" duration="4455000" />
+      <workItem from="1597366592090" duration="19668000" />
+      <workItem from="1597411177823" duration="694000" />
     </task>
     <servers />
   </component>
@@ -111,6 +113,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="605" y="214" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.824@0.0.1536.824" timestamp="1597030044261" />
+    <state x="476" y="30" key="#diamond" timestamp="1597392731314">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="476" y="30" key="#diamond/0.0.1536.824@0.0.1536.824" timestamp="1597392731314" />
     <state x="845" y="195" key="FileChooserDialogImpl" timestamp="1597316248802">
       <screen x="0" y="0" width="1549" height="831" />
     </state>
@@ -135,9 +141,9 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="270" y="54" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1597323901569" />
-    <state x="467" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1597323827625">
+    <state x="467" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1597411180288">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="467" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1597323827625" />
+    <state x="467" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1597411180288" />
   </component>
 </project>

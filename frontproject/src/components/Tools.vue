@@ -3,7 +3,6 @@
     <TopTools></TopTools>
     <Aside></Aside>
     <router-view></router-view>
-    <NewFile></NewFile>
   </div>
 </template>
 

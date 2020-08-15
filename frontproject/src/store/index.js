@@ -31,6 +31,10 @@ const store = new Vuex.Store({
       Cookie.set('name', "")
       Cookie.set('token', "")
       router.push("/login")
+    },
+    changename:function (state,response){
+      state.name = response.data.newname
+      Cookie.set('name', response.data.newname,{expires:7})
     }
   },
   actions:{

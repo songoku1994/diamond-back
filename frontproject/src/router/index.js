@@ -119,8 +119,23 @@ const routes= [
           title:"我的文档-金刚石文档",
           requireAuth:true
         }
-      }
-
+      },
+      {
+        path:'teammanage',
+        component:()=>import('../components/TeamManage'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
+      },
+      {
+        path:'teammanage/:team',
+        component:()=>import('../components/TeamManage'),
+        meta:{
+          title:"我的文档-金刚石文档",
+          requireAuth:true
+        }
+      },
     ]
   },
 

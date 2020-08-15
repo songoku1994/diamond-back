@@ -31,6 +31,9 @@
         </div>
       </el-menu>
     </el-col>
+<!--    <div v-if="NewFileVisible">-->
+      <NewFile :visible="NewFileVisible" @cancel="NewFileVisible=false"></NewFile>
+<!--    </div>-->
   </div>
 </template>
 
@@ -38,6 +41,7 @@
   import NewFile from "./NewFile";
   export default {
     name: "Aside",
+    components: {NewFile},
     data() {
       return{
         name: [
@@ -55,16 +59,13 @@
         ],
         activeIndex: "1",
         openson: this.isson === "true",
+        NewFileVisible:false
       }
     },
     methods: {
       NewFile(){
-        NewFile.data().NewFile.Title=''
-        NewFile.data().NewFile.SimpleMessage=''
-        NewFile.data().NewFile.TeamId=-1
-        NewFile.data().NewFile.Authority=0
-        NewFile.data().NewFile.Revise=0
-        NewFile.data().Visible=true
+        console.log(123321)
+        this.NewFileVisible=true
       },
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
