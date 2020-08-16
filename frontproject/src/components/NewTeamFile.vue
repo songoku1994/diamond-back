@@ -12,8 +12,8 @@
       <br><br>
       <div>所属团队:</div><br>
       <div>
-        <el-select v-model="NewTeamFile.TeamId" disabled>
-          <el-option :label="NewTeamFile.TeamName" :value="NewTeamFile.TeamId">{{NewTeamFile.TeamName}}</el-option>
+        <el-select v-model="NewTeamFile.TeamName" disabled>
+          <el-option :label="TeamName" :value="TeamName">{{TeamName}}</el-option>
         </el-select>
       </div>
       <br>
@@ -41,7 +41,7 @@
   import axios from 'axios'
   export default {
     name: "NewTeamFile",
-    props:['visible','TeamId','TeamName'],
+    props:['visible','TeamId','TeamName','Team'],
     data(){
       return {
         NewTeamFile:{Title:null,SimpleMessage:null,TeamId:null,Authority:0,Revise:0,TeamName:'',aid:-1},
@@ -70,7 +70,8 @@
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.NewTeamFile.TeamId,
-            title:this.NewTeamFile.Title
+            title:this.NewTeamFile.Title,
+            aid:-1
           }}
         ).then(res=>{
           // isRepetitiveArticleName
@@ -82,7 +83,10 @@
           console.log(this.NewTeamFile)
           this.$router.push({
             path:'/tools/editfile',
-            query:{NewTeamFile:this.NewTeamFile}
+            query:{
+              NewFile:this.NewTeamFile,
+              Team:this.Team
+            }
           })
         }).catch(res=>{
           this.$message({type:"warning",message:res})

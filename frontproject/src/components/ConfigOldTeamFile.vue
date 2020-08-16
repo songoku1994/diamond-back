@@ -11,8 +11,8 @@
       <br><br>
       <div>所属团队:</div><br>
       <div>
-        <el-select v-model="OldTeamFile.TeamId" disabled>
-          <el-option :label="OldTeamFile.TeamName" :value="OldTeamFile.TeamId">{{OldTeamFile.TeamName}}</el-option>
+        <el-select v-model="OldTeamFile.TeamName" disabled>
+          <el-option :label="OldTeamFile.TeamName" :value="OldTeamFile.TeamName">{{OldTeamFile.TeamName}}</el-option>
         </el-select>
       </div>
       <br>
@@ -29,7 +29,7 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="edit" icon="el-icon-edit">编辑内容</el-button>
+        <el-button type="primary" @click="submit" icon="el-icon-edit">编辑内容</el-button>
         <el-button type="primary" @click="save">保存并退出</el-button>
         <el-button type="danger" @click="$emit('cancel')">不保存退出</el-button>
       </span>
@@ -40,7 +40,7 @@
   import axios from 'axios'
   export default {
     name: "ConfigOldTeamFile",
-    props:['Visible','Title','SimpleMessage','TeamId','ArticleAuthority','Revise','TeamName','aid'],
+    props:['Visible','Title','SimpleMessage','TeamId','ArticleAuthority','Revise','TeamName','aid','Team'],
     data(){
       return {
         OldTeamFile:{Title:'',SimpleMessage:'',TeamId:'',Authority:'',Revise:'',TeamName:'',aid:''},
@@ -48,6 +48,8 @@
       }
     },
     created() {
+      console.log('configTeam')
+      console.log(this.Team)
       //从TeamManage中传入的团队名字和团队ID
       this.OldTeamFile.Title=this.Title
       this.OldTeamFile.SimpleMessage=this.SimpleMessage
@@ -56,8 +58,6 @@
       this.OldTeamFile.Revise=this.Revise
       this.OldTeamFile.TeamName=this.TeamName
       this.OldTeamFile.aid=this.aid
-      console.log(666)
-      console.log(this.OldTeamFile)
     },
     methods:{
       submit(){
@@ -73,7 +73,8 @@
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.OldTeamFile.TeamId,
-            title:this.OldTeamFile.Title
+            title:this.OldTeamFile.Title,
+            aid:this.OldTeamFile.aid
           }}
         ).then(res=>{
           // isRepetitiveArticleName
@@ -83,26 +84,51 @@
           }
           this.$emit('cancel')
           console.log(this.OldTeamFile)
-          this.$router.push({path:'/tools/editfile',query:{OldTeamFile:this.OldTeamFile}})
-        }).catch(res=>{
-          this.$message({type:"warning",message:res})
+          this.$router.push({
+            path:'/tools/editfile',
+            query:{
+              NewFile:this.OldTeamFile,
+              Team:this.Team,
+            }
+          })
         })
       },
-      save(){},
-      edit(){
-        //   this.$router.push({
-        //     path:'/tools/editfile',
-        //     query:{
-        //       NewFile:this.AllFile[i]
-        //     }
-        //   })
-        this.$router.push({
-          path:'/tools/editfile',
-          query:{
-            NewFile:this.OldTeamFile
+      save(){
+        axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
+            name:this.$store.state.name,
+            token:this.$store.state.token,
+            tid:this.OldTeamFile.TeamId,
+            title:this.OldTeamFile.Title,
+            aid:this.OldTeamFile.aid
+          }}
+        ).then(res=>{
+          if(res.data.isRepetitiveArticleName===true){
+            this.$message({type:"error",message:'已有同名标题'})
+            return
           }
+          let formData = new FormData();
+          formData.append('name', this.$store.state.name,);
+          formData.append( 'token',this.$store.state.token);
+          formData.append('content',null);
+          formData.append('ifteam',this.OldTeamFile.TeamId);
+          formData.append('title',this.OldTeamFile.Title);
+          formData.append('message',this.OldTeamFile.SimpleMessage);
+          formData.append('visibility',this.OldTeamFile.Authority);
+          formData.append('commentGranted',this.OldTeamFile.Revise);
+          formData.append('aid',this.OldTeamFile.aid);
+          let config = {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+          axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
+          {
+            console.log(res)
+            this.$emit('cancel')
+            location.reload()
+          })
         })
-      }
+      },
     },
     watch:{
       'OldTeamFile.TeamId'(){

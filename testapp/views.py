@@ -1,18 +1,21 @@
 from django.core import serializers
 import json
 from django.http import HttpResponse, JsonResponse, FileResponse, Http404, StreamingHttpResponse
-from .models import User, UserToken, Article, MemberShip, Team, PersonalMessage, TeamMessage, Comment
+from .models import User, UserToken, Article, MemberShip, Team, PersonalMessage, TeamMessage, Comment, Tocomment, \
+    BrowerHistory, Favorite
 import uuid
 from testapp import models
 from datetime import datetime
 # Create your views here.
 from django.views.decorators.http import require_http_methods
+from django.db.models import Q
 
 
 def object_to_json(obj):
     return dict([(kk, obj.__dict__[kk]) for kk in obj.__dict__.keys() if kk != "_state"])
 
 
+# 注册
 @require_http_methods(["POST"])
 def register(request):  # 注册
     print(request)
@@ -44,8 +47,9 @@ def register(request):  # 注册
     return JsonResponse(response)
 
 
+# 登录
 @require_http_methods(["GET"])
-def login(request):  # 登录
+def login(request):
     response = {}
     try:
         name = request.GET['name']
@@ -72,6 +76,7 @@ def login(request):  # 登录
     return JsonResponse(response)
 
 
+# 获取我的个人信息
 @require_http_methods(["GET"])
 def myinfo(request):  # 获取我的个人信息
     response = {}
@@ -97,8 +102,9 @@ def myinfo(request):  # 获取我的个人信息
     return JsonResponse(response)
 
 
+# 身份认证
 @require_http_methods(["GET"])
-def Authentication(request):  # 身份认证
+def Authentication(request):
     response = {}
     try:
         name = request.GET['name']
@@ -120,8 +126,9 @@ def Authentication(request):  # 身份认证
     return JsonResponse(response)
 
 
+# 上传文件/编辑文件
 @require_http_methods(["POST"])
-def uploadNewArticle(request):  # 上传自己的文档  个人的和团队的(文件名相同会覆盖，不相同创建新的)
+def uploadNewArticle(request):
     response = {}
     try:
         name = request.POST.get('name')
@@ -143,7 +150,7 @@ def uploadNewArticle(request):  # 上传自己的文档  个人的和团队的(�
         print(title)
         if u:  # 用户存在
             if UserToken.objects.get(user=u, token=token):  # 认证成功
-                if aid == -1:
+                if aid == -1:  # 新建文章
                     article = Article()
                     response['msg'] = "创建了一个新文档"
                 else:
@@ -175,6 +182,7 @@ def uploadNewArticle(request):  # 上传自己的文档  个人的和团队的(�
     return JsonResponse(response)
 
 
+# 获取我的文章列表
 @require_http_methods(["GET"])
 def getAllArticle(request):  # 我创建的全部文档的信息(不包含文档内容)个人和团队
     response = {}
@@ -200,27 +208,50 @@ def getAllArticle(request):  # 我创建的全部文档的信息(不包含文档
     return JsonResponse(response)
 
 
+# 判断文章名是否重复 ~Q是取反的意思
 @require_http_methods(["GET"])
-def judgeRepetitiveArticleName(request):  # 判断是否有同名的个人或者团队文档
+def judgeRepetitiveArticleName(request):
     response = {}
     try:
         name = request.GET['name']
         token = request.GET['token']
         tid = request.GET['tid']
         tid = int(tid)
+        aid = request.GET['aid']
+        aid = int(aid)
         title = request.GET['title']
         u = User.objects.get(name=name)
 
         if u:
             if UserToken.objects.get(user=u, token=token):
-                if tid == -1 and Article.objects.filter(uid=u, title=title):
-                    response['isRepetitiveArticleName'] = True
-                elif tid > 0 and Article.objects.filter(uid=u, title=title):
-                    response['isRepetitiveArticleName'] = True
-                else:
-                    response['isRepetitiveArticleName'] = False
-                    response['msg'] = "起飞"
-                    response['state'] = 1
+                if tid == -1:  # 个人文章
+                    if aid == -1:  # 新建文章
+                        if Article.objects.filter(uid=u, title=title):  # 重复
+                            response['isRepetitiveArticleName'] = True
+                        else:
+                            response['isRepetitiveArticleName'] = False
+                            response['msg'] = "起飞"
+                            response['state'] = 1
+                    elif Article.objects.filter(uid=u, title=title).filter(~Q(aid=aid)):
+                        response['isRepetitiveArticleName'] = True
+                    else:
+                        response['isRepetitiveArticleName'] = False
+                        response['msg'] = "起飞"
+                        response['state'] = 1
+                elif aid == -1:  # 团队文章 新建
+                    if Article.objects.filter(tid=tid, title=title):
+                        response['isRepetitiveArticleName'] = True
+                    else:
+                        response['isRepetitiveArticleName'] = False
+                        response['msg'] = "起飞"
+                        response['state'] = 1
+                elif aid >= 1:  # 团队文章 修改
+                    if Article.objects.filter(tid=tid, title=title).filter(~Q(aid=aid)):
+                        response['isRepetitiveArticleName'] = True
+                    else:
+                        response['isRepetitiveArticleName'] = False
+                        response['msg'] = "起飞"
+                        response['state'] = 1
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0
@@ -233,8 +264,9 @@ def judgeRepetitiveArticleName(request):  # 判断是否有同名的个人或者
     return JsonResponse(response)
 
 
+# 获取文章内容
 @require_http_methods(["GET"])
-def getArticleContent(request, id):  # 获取文章的内容
+def getArticleContent(request, id):
     response = {}
     try:
         id = int(id)
@@ -248,14 +280,20 @@ def getArticleContent(request, id):  # 获取文章的内容
                     article = Article.objects.filter(aid=id)[0]
                     if article.visibility >= 3 or article.uid == u:  # 可见
                         response['msg'] = "起飞"
+                        author = article.uid.name
+                        response['author'] = author
+                        response['article'] = object_to_json(article)
                         response['content'] = article.content
                     elif article.isTeamarticle:
                         team = Team.objects.filter(tid=article.tid)
                         if article.isTeamarticle and article.visibility >= 1 and + \
                                 MemberShip.objects.filter(team=team, user=article.uid) and + \
-                                MemberShip.objects.filter(team=team, uid=article.u):
+                                MemberShip.objects.filter(team=team, uid=u):
                             response['msg'] = "起飞"
+                            author = article.uid.name
+                            response['author'] = author
                             response['content'] = article.content
+                            response['article'] = object_to_json(article)
                         else:
                             response['msg'] = "没有权限"
                     else:
@@ -274,6 +312,7 @@ def getArticleContent(request, id):  # 获取文章的内容
     return JsonResponse(response)
 
 
+# 文章放入回收站
 @require_http_methods(["GET"])
 def deleteArticle(request, id):
     id = int(id)
@@ -312,6 +351,7 @@ def deleteArticle(request, id):
     return JsonResponse(response)
 
 
+# 获取回收站文章
 @require_http_methods(["GET"])
 def getAbandonedArticle(request):
     response = {}
@@ -337,6 +377,7 @@ def getAbandonedArticle(request):
     return JsonResponse(response)
 
 
+# 文章从回收站恢复
 @require_http_methods(["GET"])
 def articleRecover(request, id):
     id = int(id)
@@ -375,6 +416,7 @@ def articleRecover(request, id):
     return JsonResponse(response)
 
 
+# 修改个人信息
 @require_http_methods(["POST"])
 def changeUserInfo(request):
     response = {}
@@ -422,15 +464,16 @@ def changeUserInfo(request):
     return JsonResponse(response)
 
 
-@require_http_methods(["GET"])
+# 创建团队
+@require_http_methods(["POST"])
 def createTeam(request):
     response = {}
     try:
-        name = request.GET['name']
-        token = request.GET['token']
+        name = request.POST.get('name')
+        token = request.POST.get('token')
         u = User.objects.get(name=name)
-        tname = request.GET['tname']
-        tintro = request.GET['tintro', ""]
+        tname = request.POST.get('tname')
+        tintro = request.POST.get('tintro', "")
         tphoto = request.FILES.get('tphoto', None)
         if u:
             if UserToken.objects.get(user=u, token=token):
@@ -445,6 +488,7 @@ def createTeam(request):
                     if tintro != "":
                         team.tIntro = tintro
                     team.creatorid = u.uid
+                    team.membernumber = 1
                     team.save()
                     membership = MemberShip()
                     membership.user = u
@@ -462,6 +506,7 @@ def createTeam(request):
     return JsonResponse(response)
 
 
+# 彻底删除文件
 @require_http_methods(["GET"])
 def completelyDeleteArticle(request, id):
     id = int(id)
@@ -499,8 +544,9 @@ def completelyDeleteArticle(request, id):
     return JsonResponse(response)
 
 
+# 获取文章、用户、团队列表
 @require_http_methods(["GET"])
-def getUserListByKey(request):
+def getListByKey(request):
     response = {}
     try:
         name = request.GET['name']
@@ -510,14 +556,23 @@ def getUserListByKey(request):
         if u:
             if UserToken.objects.get(user=u, token=token):
                 userList = User.objects.filter(name__icontains=key)
+                teamList = Team.objects.filter(tname__icontains=key)
+                articleList = Article.objects.filter(title__icontains=key, visibility__gte=3)
+                authorList = []
+                for item in articleList:
+                    authorName = item.uid.name
+                    authorList.append(authorName)
+                response['authorList'] = authorList
                 response['userList'] = json.loads(serializers.serialize("json", userList))
+                response['teamList'] = json.loads(serializers.serialize("json", teamList))
+                response['articleList'] = json.loads(serializers.serialize("json", articleList))
                 response['state'] = 1
-                response['msg'] = "成功根据关键字查询到用户列表！"
+                response['msg'] = "成功根据关键字查询到列表！"
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0
         else:
-            response['msg'] = "不存在这样的用户名！"
+            response['msg'] = "不存在"
             response['state'] = 0
     except Exception as e:
         response['msg'] = str(e)
@@ -525,6 +580,7 @@ def getUserListByKey(request):
     return JsonResponse(response)
 
 
+# 邀请用户加入我的团队
 @require_http_methods(["GET"])
 def inviteUserToTeam(request):
     response = {}
@@ -537,17 +593,22 @@ def inviteUserToTeam(request):
         invitedUser = User.objects.get(uid=uid)
         team = Team.objects.get(tid=tid)
         if u:
-            if UserToken.objects.get(user=u, token=token):
-                if MemberShip.objects.get(user=invitedUser, team=team):
+            if UserToken.objects.filter(user=u, token=token):
+                if MemberShip.objects.filter(user=invitedUser, team=team):
                     response['msg'] = "该用户已在您的团队中"
+                    response['state'] = 0
+                elif PersonalMessage.objects.filter(tid=tid, user=invitedUser, isInviteMessage=True, checked=False):
+                    response['msg'] = "不要重复发送邀请"
                     response['state'] = 0
                 else:
                     newPersonalMessage = PersonalMessage()
-                    newPersonalMessage.user = u
+                    newPersonalMessage.user = invitedUser
+                    newPersonalMessage.isInviteMessage = True
                     newPersonalMessage.tid = tid
+                    newPersonalMessage.type = "团队邀请"
                     newPersonalMessage.content = str(u.name) + "邀请您加入团队" + str(team.tname)
                     newPersonalMessage.save()
-                    response['msg'] = "已经向改用户发出邀请！"
+                    response['msg'] = "已经向该用户发出邀请！"
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0
@@ -560,6 +621,226 @@ def inviteUserToTeam(request):
     return JsonResponse(response)
 
 
+# 接受邀请加入团队
+@require_http_methods(["GET"])
+def AcceptToJoinTeam(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        pmid = request.GET['pmid']
+        tid = request.GET['tid']
+        team = Team.objects.get(tid=tid)
+        personalmessage = PersonalMessage.objects.get(pmid=pmid)
+        Accepted = request.GET['Accept'] == "true"
+        messageToInviter = PersonalMessage()
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                if Accepted:
+                    newmembership = MemberShip()
+                    newmembership.user = u
+                    newmembership.team = team
+                    newmembership.save()
+                    team.membernumber += 1
+                    messageToInviter.user = User.objects.get(uid=team.creatorid)
+                    messageToInviter.type = "成员加入"
+                    messageToInviter.content = str(name) + "同意了你的邀请，加入了您的团队[" + str(team.tname) +"]"
+                    messageToInviter.save()
+                    personalmessage.checked = True
+                    personalmessage.save()
+                    response['msg'] = "成功加入团队"
+                else:
+                    messageToInviter.user = User.objects.filter(uid=team.creatorid)[0]
+                    messageToInviter.content = str(name) + "拒绝了你的邀请，没有加入您的团队[" + str(team.tname) +"]"
+                    messageToInviter.type = "邀请被拒绝"
+                    messageToInviter.save()
+                    personalmessage.checked = True
+                    personalmessage.save()
+                    response['msg'] = "成功拒绝了" + str(User.objects.get(uid=team.creatorid).name) + "的邀请"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 我的消息
+@require_http_methods(["GET"])
+def myMessage(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                messageList = PersonalMessage.objects.filter(user=u)
+                response['message'] = json.loads(serializers.serialize("json", messageList))
+                response['state'] = 1
+                response['msg'] = "起飞！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 把未读的消息设为已读（邀请加入团队 的信息在AcceptToJoinTeam中会自动设置为已读，不用再手动设为已读）
+@require_http_methods(["GET"])
+def checkMessage(request):  # 把消息设置为已读
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        pmid = request.GET['pmid']
+        message = PersonalMessage.objects.get(pmid=pmid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                message.checked = True
+                message.save()
+                response['state'] = 1
+                response['msg'] = "成功设置为已读！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 删除一条已读消息
+@require_http_methods(["GET"])
+def deleteMessage(request):  # 删除一个已读信息
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        pmid = request.GET['pmid']
+        message = PersonalMessage.objects.get(pmid=pmid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                message.delete()
+                response['state'] = 1
+                response['msg'] = "成功设置为已读！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 获取我的团队
+@require_http_methods(["GET"])
+def myTeam(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                MemberShipList = MemberShip.objects.filter(user=u)
+                teamList = []
+                for item in MemberShipList:
+                    team = item.team
+                    teamList.append(object_to_json(team))
+                response['teamList'] = teamList
+                response['state'] = 1
+                response['msg'] = "起飞！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 获取团队成员
+@require_http_methods("GET")
+def getTeamMembers(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        tid = request.GET['tid']
+        team = Team.objects.get(tid=tid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                MemberShipList = MemberShip.objects.filter(team=team)
+                UserList = []
+                for item in MemberShipList:
+                    user = item.user
+                    UserList.append(object_to_json(user))
+                response['userList'] = UserList
+                response['state'] = 1
+                response['msg'] = "起飞！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 获取团队文档
+@require_http_methods("GET")
+def getTeamArticles(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        tid = request.GET['tid']
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                ArticleList = Article.objects.filter(tid=tid)
+                response['ArticleList'] = json.loads(serializers.serialize("json", ArticleList))
+                response['state'] = 1
+                response['msg'] = "起飞！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 对文章写评论  ，能否评论应该在前端判断
 @require_http_methods(["GET"])
 def createComment(request):
     response = {}
@@ -569,9 +850,9 @@ def createComment(request):
         u = User.objects.get(name=name)
         if u:
             if UserToken.objects.get(user=u, token=token):
-                aid = request.GET('aid')
+                aid = request.GET['aid']
                 article = Article.objects.get(aid=aid)
-                content = request.GET('content')
+                content = request.GET['content']
                 comment = Comment()
                 comment.article = article
                 comment.uid = u
@@ -591,20 +872,26 @@ def createComment(request):
     return JsonResponse(response)
 
 
+# 对于评论写评论
 @require_http_methods(["GET"])
-def getArticleListByKey(request):
+def createToComment(request):
     response = {}
     try:
         name = request.GET['name']
         token = request.GET['token']
         u = User.objects.get(name=name)
-        key = request.GET['key']
+        cid = request.GET['cid']
+        comment = Comment.objects.get(cid=cid)
+        content = request.GET['content']
         if u:
             if UserToken.objects.get(user=u, token=token):
-                ArticleList = Article.objects.filter(title__icontains=key)
-                response['ArticleList'] = json.loads(serializers.serialize("json", ArticleList))
+                tocomment = Tocomment()
+                tocomment.user = u
+                tocomment.comment = comment
+                tocomment.content = content
+                tocomment.save()
                 response['state'] = 1
-                response['msg'] = "成功根据关键字查询到文章列表！"
+                response['msg'] = "评论成功！"
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0
@@ -618,44 +905,102 @@ def getArticleListByKey(request):
 
 
 @require_http_methods(["GET"])
-def AcceptToJoinTeam(request):
+def allFavorite(request):  # 显示出我收藏的文档
     response = {}
     try:
         name = request.GET['name']
         token = request.GET['token']
         u = User.objects.get(name=name)
-        pmid = request.GET['pmid']
-        tid = request.GET['tid']
-        team = Team.objects.get(tid=tid)
-        personalmessage = PersonalMessage.objects.get(pmid=pmid)
-        Accepted = request.GET['Accept']=="true"
-        messageToInviter = PersonalMessage()
         if u:
             if UserToken.objects.get(user=u, token=token):
-                if Accepted:
-                    newmembership =MemberShip()
-                    newmembership.user = u
-                    newmembership.team = team
-                    newmembership.save()
-
-                    messageToInviter.user = User.objects.filter(uid=team.creatorid)
-                    messageToInviter.content = str(name) + "同意了你的邀请，加入了您的团队"+str(team.tname)
-                    messageToInviter.save()
-                    personalmessage.checked = True
-                    personalmessage.save()
-                    response['msg'] = "成功加入团队"
-                else:
-                    messageToInviter.user = User.objects.filter(uid=team.creatorid)
-                    messageToInviter.content = str(name) + "拒绝了你的邀请，没有加入您的团队" + str(team.tname)
-                    messageToInviter.save()
-                    personalmessage.checked = True
-                    personalmessage.save()
-                    response['msg'] = "成功拒绝了"+str(User.objects.get(uid=team.creatorid).name)+"的邀请"
+                response['state'] = 1
+                favoriteList = Favorite.objects.filter(user=u)
+                articleList = []
+                for item in favoriteList:
+                    article = item.article
+                    articleList.append(object_to_json(article))
+                response['articleList'] = articleList
+                response['msg'] = "起飞"
             else:
                 response['msg'] = "cookie 过期了!"
                 response['state'] = 0
         else:
             response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# @require_http_methods(["GET"])
+# def exitTeam(request):
+
+
+# 获取文章 的评论信息
+@require_http_methods(["GET"])
+def getCommentsOfArticle(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        aid = request.GET['aid']
+        aid = int(aid)
+        article = Article.objects.get(aid=aid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                commentList = Comment.objects.filter(article=article)
+                SonComments = []
+                commenter = []
+                SonCommenter = []
+                for item in commentList:
+                    sonComments = Tocomment.objects.filter(comment=item)
+                    lucky = []
+                    for it in sonComments: # id是子评论
+                        lucky.append(it.user.name)
+                    SonCommenter.append(lucky)
+                    SonComments.append(json.loads(serializers.serialize("json", sonComments)))
+                    commenter.append(item.uid.name)
+                response['commenter'] = commenter
+                response['soncommenter'] = SonCommenter
+                response['commentList'] = json.loads(serializers.serialize("json", commentList))
+                response['SonComments'] = SonComments
+                response['msg'] = "已获取此文章的评论和子评论"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def getUserByKey(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        key = request.GET['key']
+        tid = request.GET['tid']
+        tid = int(tid)
+        team = Team.objects.get(tid=tid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                userList = User.objects.filter(name__icontains=key)
+                response['userList'] = json.loads(serializers.serialize("json", userList))
+                response['state'] = 1
+                response['msg'] = "成功根据关键字查询到列表！"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在"
             response['state'] = 0
     except Exception as e:
         response['msg'] = str(e)

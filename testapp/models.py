@@ -43,6 +43,7 @@ class Article(models.Model):
 class Team(models.Model):
     tid = models.AutoField(primary_key=True)
     creatorid = models.IntegerField()
+    membernumber = models.IntegerField(default=0)
     createtime = models.DateTimeField(auto_now_add=True)
     tname = models.CharField(blank=False, null=False, max_length=100)
     tIntro = models.CharField(max_length=200)
@@ -107,6 +108,7 @@ class PersonalMessage(models.Model):
     content = models.CharField(max_length=500)
     tid = models.IntegerField(default=-1)
     aid =models.IntegerField(default=-1)
+    type = models.CharField(default="",max_length=2000)
     isInviteMessage = models.BooleanField(default=False)
     time = models.DateTimeField(auto_now_add=True)
     checked = models.BooleanField(default=False)

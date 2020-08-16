@@ -14,7 +14,7 @@
         <div>权限:</div>
         <div>
           <el-select v-model="NewFile.Authority">
-            <el-option v-for="(i,index) in Authority" :label="i" :value="index">{{i}}</el-option>
+            <el-option v-for="(i,index) in Authority" :label="i" :value="index" v-if="index===0||index>2">{{i}}</el-option>
           </el-select>
           <el-select v-model="NewFile.Revise" v-if="NewFile.Authority!==0">
             <el-option label="不可评论" :value="0">不可评论</el-option>
@@ -38,7 +38,7 @@ export default {
   data(){
     return{
       NewFile:{Title:'',SimpleMessage:'',TeamId:-1,Authority:0,Revise:0,aid:-1},
-      Authority:['仅自己','所有人可见','所有人可编辑'],
+      Authority:['仅自己','','','所有人可见','所有人可编辑'],
     }
   },
   methods:{
@@ -51,14 +51,17 @@ export default {
         })
         return
       }
+      console.log(111222333)
       axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
           name:this.$store.state.name,
           token:this.$store.state.token,
           tid:this.NewFile.TeamId,
-          title:this.NewFile.Title
+          title:this.NewFile.Title,
+          aid:-1
         }}
       ).then(res=>{
         // isRepetitiveArticleName
+        // console.log(res)
         if(res.data.isRepetitiveArticleName===true){
           this.$message({type:"error",message:'已有同名标题'})
           return

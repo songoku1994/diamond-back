@@ -11,8 +11,7 @@
             :options="editorOption"
             @blur="onEditorBlur($event)"
             @focus="onEditorFocus($event)"
-            @change="onEditorChange($event)"
-          >
+            @change="onEditorChange($event)">
           </quill-editor>
         </div>
       </el-aside>
@@ -23,7 +22,7 @@
           <el-button type="primary" style="width: 120px" @click="submit()"
           >保存</el-button
           >
-          <el-button type="danger" style="width: 120px" @click="subexit()">保存并退出</el-button>
+          <el-button type="danger" style="width: 120px" @click="subexit">保存并退出</el-button>
         </el-button-group>
       </el-footer>
     </el-container>
@@ -156,23 +155,55 @@
         }
         axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
         {
+          console.log('AAAAAIIIIIIDDDD!!!!')
+          console.log(this.$route.query.NewFile)
+          console.log(res)
+          this.$route.query.NewFile.aid=res.data.aid
+        })
+      },
+      subexit(){
+        let formData = new FormData();
+        formData.append('name', this.$store.state.name,);
+        formData.append( 'token',this.$store.state.token);
+        formData.append('content',this.content);
+        formData.append('ifteam',this.$route.query.NewFile.TeamId);
+        formData.append('title',this.$route.query.NewFile.Title);
+        formData.append('message',this.$route.query.NewFile.SimpleMessage);
+        formData.append('visibility',this.$route.query.NewFile.Authority);
+        formData.append('commentGranted',this.$route.query.NewFile.Revise);
+        formData.append('aid',this.$route.query.NewFile.aid);
+        let config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+        axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
+        {
+          console.log('AAAAAIIIIIIDDDD!!!!')
+          console.log(this.$route.query.NewFile)
           console.log(res)
           this.$route.query.NewFile.aid=res.data.aid
           if(res.data.state === 1)
           {
             alert("上传成功！")
           }
+          if(this.$route.query.NewFile.TeamId===-1)
+          {
+            this.$router.push('/tools/userfile')
+            location.reload()
+          }
+          else {
+            let Team=this.$route.query.Team
+            console.log('TTTEEEAAAMMM!!!')
+            console.log(Team)
+            this.$router.push({
+              path:'/tools/teammanage',
+              query:{
+                Team:JSON.stringify(Team)
+              }
+            })
+          }
         })
-
-
-      },
-      subexit(){
-        this.submit()
-        if(this.$route.query.NewFile.TeamId===-1)
-        {
-          this.$router.push('/tools/userfile')
-          location.reload()
-        }
       }
     }
   };
