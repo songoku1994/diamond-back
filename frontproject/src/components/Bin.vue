@@ -19,8 +19,8 @@
       </el-table>
     </div>
     <div style="float: right;margin-top: 30px">
-      <el-button type="primary" @click="AllRecover">全部恢复</el-button>
-      <el-button type="danger" @click="AllDelete">全部删除</el-button>
+      <el-button v-if="BinData.length>1" type="primary" @click="AllRecover">全部恢复</el-button>
+      <el-button v-if="BinData.length>1" type="danger" @click="AllDelete">全部删除</el-button>
     </div>
     <ConfigOldFile v-if="BinFileVisible"
                    :visible.sync="BinFileVisible"

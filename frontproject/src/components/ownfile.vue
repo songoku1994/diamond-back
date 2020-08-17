@@ -49,6 +49,7 @@
                    :aid="SelectArticle.aid"
                    :able-to-edit="true"
                    @cancel="ConfigOldFileVisible=false"></ConfigOldFile>
+    <NewFile :visible="NewFileVisible" @cancel="NewFileVisible=false"></NewFile>
   </div>
 </template>
 
@@ -58,12 +59,15 @@
   import WorkPlace from "./WorkPlace";
   import axios from "axios";
   import ConfigOldFile from "./ConfigOldFile";
+  import NewFile from "./NewFile";
+
   export default {
     name: "Home",
     data(){
       return{
         card: [],
         ConfigOldFileVisible:false,
+        NewFileVisible: false,
         SelectArticle:{},
         currentDate: "2020-08-11",
         operate:[
@@ -115,7 +119,7 @@
         })
       },
       tonewfile(){
-        alert("跳转到新建页面");
+        this.NewFileVisible=true
       },
       TimeFormat(str){
         return str.substring(0,10)
@@ -123,7 +127,7 @@
       shareitem(id){
         this.$notify({
           title: '复制链接以分享',
-          message: '???' + id,
+          message: 'http://127.0.0.1:8000/#/tools/viewfile/' + id,
           type: 'success'
         });
       },
@@ -173,7 +177,7 @@
         });
       },
     },
-    components: {Aside, TopTools, WorkPlace, ConfigOldFile},
+    components: {Aside, TopTools, WorkPlace, ConfigOldFile, NewFile},
   }
 </script>
 

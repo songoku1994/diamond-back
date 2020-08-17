@@ -60,11 +60,12 @@
     created() {
       console.log('NNNEEEWWW!!!')
       console.log(this.$route.query.NewFile)
-      if(this.$route.query.NewFile.aid>0)
+      this.NewFile=JSON.parse(this.$route.query.NewFile)
+      if(this.NewFile.aid>0)
       {
-        console.log(this.$route.query.NewFile);
+        console.log(this.NewFile);
         axios({
-          url:"http://127.0.0.1:8000/getArticleContent/"+this.$route.query.NewFile.aid,
+          url:"http://127.0.0.1:8000/getArticleContent/"+this.NewFile.aid,
           params: {
             name:this.$store.state.name,
             token: this.$store.state.token
@@ -81,6 +82,7 @@
     },
     data() {
       return {
+        NewFile:'',
         contentCode: '',
         content:'',
         editorOption: {
@@ -142,12 +144,12 @@
         formData.append('name', this.$store.state.name,);
         formData.append( 'token',this.$store.state.token);
         formData.append('content',this.content);
-        formData.append('ifteam',this.$route.query.NewFile.TeamId);
-        formData.append('title',this.$route.query.NewFile.Title);
-        formData.append('message',this.$route.query.NewFile.SimpleMessage);
-        formData.append('visibility',this.$route.query.NewFile.Authority);
-        formData.append('commentGranted',this.$route.query.NewFile.Revise);
-        formData.append('aid',this.$route.query.NewFile.aid);
+        formData.append('ifteam',this.NewFile.TeamId);
+        formData.append('title',this.NewFile.Title);
+        formData.append('message',this.NewFile.SimpleMessage);
+        formData.append('visibility',this.NewFile.Authority);
+        formData.append('commentGranted',this.NewFile.Revise);
+        formData.append('aid',this.NewFile.aid);
         let config = {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -156,9 +158,9 @@
         axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
         {
           console.log('AAAAAIIIIIIDDDD!!!!')
-          console.log(this.$route.query.NewFile)
+          console.log(this.NewFile)
           console.log(res)
-          this.$route.query.NewFile.aid=res.data.aid
+          this.NewFile.aid=res.data.aid
         })
       },
       subexit(){
@@ -166,12 +168,12 @@
         formData.append('name', this.$store.state.name,);
         formData.append( 'token',this.$store.state.token);
         formData.append('content',this.content);
-        formData.append('ifteam',this.$route.query.NewFile.TeamId);
-        formData.append('title',this.$route.query.NewFile.Title);
-        formData.append('message',this.$route.query.NewFile.SimpleMessage);
-        formData.append('visibility',this.$route.query.NewFile.Authority);
-        formData.append('commentGranted',this.$route.query.NewFile.Revise);
-        formData.append('aid',this.$route.query.NewFile.aid);
+        formData.append('ifteam',this.NewFile.TeamId);
+        formData.append('title',this.NewFile.Title);
+        formData.append('message',this.NewFile.SimpleMessage);
+        formData.append('visibility',this.NewFile.Authority);
+        formData.append('commentGranted',this.NewFile.Revise);
+        formData.append('aid',this.NewFile.aid);
         let config = {
           headers: {
             'Content-Type': 'multipart/form-data'
@@ -180,14 +182,14 @@
         axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
         {
           console.log('AAAAAIIIIIIDDDD!!!!')
-          console.log(this.$route.query.NewFile)
+          console.log(this.NewFile)
           console.log(res)
-          this.$route.query.NewFile.aid=res.data.aid
+          this.NewFile.aid=res.data.aid
           if(res.data.state === 1)
           {
             alert("上传成功！")
           }
-          if(this.$route.query.NewFile.TeamId===-1)
+          if(this.NewFile.TeamId===-1)
           {
             this.$router.push('/tools/userfile')
             location.reload()
@@ -199,7 +201,7 @@
             this.$router.push({
               path:'/tools/teammanage',
               query:{
-                Team:JSON.stringify(Team)
+                Team:Team
               }
             })
           }

@@ -10,7 +10,11 @@
             Written By {{author}}
           </div>
           <div class="info" style="border-bottom:2px solid #CCC;padding-top: 10px"></div>
-          <div v-html="file.content" id="file_content"></div>
+          <div class="ql-snow">
+            <div class="ql-editor">
+              <div v-html="file.content" id="file_content"></div>
+            </div>
+          </div>
           <div id="blog_content_footer">
             <el-form :inline="true">
               <el-tooltip :v-if="this.visibility >= '3'" class="tool_tip_item" effect="dark" content="分享" placement="top-end">
@@ -19,7 +23,7 @@
               </el-tooltip>
               <el-tooltip class="tool_tip_item" effect="dark" content="收藏" placement="top">
                 <el-button :type="this.isCollected ?'warning':'default'" icon="el-icon-star-off"
-                           circle
+                           @click="handlefavorite()" circle
                 ></el-button>
               </el-tooltip>
               <el-tooltip v-if="this.allowcomment" class="tool_tip_item" effect="dark" content="评论" placement="top">
@@ -43,6 +47,7 @@
       title="写评论"
       :visible.sync="dialogVisible"
       :show-close="false"
+      :close-on-click-modal="false"
       width="500px">
       <el-form :model="commentForm" ref="commentForm" :rules="rules">
         <el-form-item prop="content">
@@ -61,6 +66,7 @@
   </div>
 </template>
 
+<!--<link href="https://cdn.bootcdn.net/ajax/libs/quill/2.0.0-dev.4/quill.bubble.min.css" rel="stylesheet">-->
 <script>
   import Comment from "../components/Comment";
   import axios from "axios";
@@ -91,6 +97,44 @@
       }
     },
     methods: {
+      handlefavorite() {
+        if(this.isCollected === true){
+          axios({
+            url:"http://127.0.0.1:8000/deleteFavorite",
+            method:"get",
+            params:{
+              name:this.$store.state.name,
+              token:this.$store.state.token,
+              id:this.$route.params.id,
+            }
+          }).then(res => {
+            console.log(res);
+            this.$message({
+              type: 'success',
+              message: '取消收藏成功!'
+            });
+            this.isCollected = false
+          })
+        }
+        else{
+          axios({
+            url:"http://127.0.0.1:8000/addFavorite",
+            method:"get",
+            params: {
+              name: this.$store.state.name,
+              token: this.$store.state.token,
+              aid: this.$route.params.id,
+            }
+          }).then(res => {
+            console.log(res)
+            this.isCollected = true
+            this.$message({
+              type: 'success',
+              message: '添加收藏成功!'
+            });
+          })
+        }
+      },
       submitComment(formName) {
         this.dialogVisible = false;
         this.$refs[formName].validate(valid => {
@@ -131,6 +175,20 @@
       console.log(this.$route.path)
       console.log(this.$route.params.id)
       axios({
+        url:"http://127.0.0.1:8000/judgeFavorite",
+        method:"get",
+        params:{
+          name:this.$store.state.name,
+          token:this.$store.state.token,
+          aid:this.$route.params.id,
+        }
+      }).then(res => {
+        console.log(res);
+        console.log("这里是获取是否收藏")
+        this.isCollected = res.data.msg;
+        console.log(this.isCollected)
+      })
+      axios({
         url:"http://127.0.0.1:8000/getArticleContent/"+this.$route.params.id,
         method:"get",
         params:{
@@ -139,25 +197,29 @@
         }
       }).then(res => {
         console.log(res);
-        this.fid = this.$route.params.id;
-        this.file = res.data.article;
-        this.author = res.data.author;
-        this.visibility = res.data.article.visibility;
-        this.allowcomment = res.data.article.commentGranted;
-        console.log("这里是viewfile")
-        // for(let a of res.data.articles){
-        //   let obj = {}
-        //   obj.LastViewDate = this.TimeFormat(a.fields.lastedittime)
-        //   obj.CreateDate = this.TimeFormat(a.fields.createtime)
-        //   obj.Author = this.$store.state.name
-        //   obj.aid = a.pk
-        //   obj.TeamId=a.fields.tid
-        //   obj.Title = a.fields.title
-        //   obj.SimpleMessage = a.fields.message
-        //   obj.Authority = a.fields.visibility
-        //   obj.Revise = a.fields.commentGranted? 1:0
-        //   this.card.push(obj)
-        // }
+        if(res.data.msg === "没有权限"){
+          this.$alert("您没有阅读此文章的权限,即将返回首页")
+          setTimeout(() =>{
+            this.$router.push('/tools/home')
+          },3000);
+        }
+        else if(res.data.msg === "文章不存在"){
+          this.$alert("文章已被删除,即将返回首页")
+          setTimeout(() =>{
+            this.$router.push('/tools/home')
+          },3000);
+        }
+        else{
+          this.fid = this.$route.params.id;
+          this.file = res.data.article;
+          this.author = res.data.author;
+          this.visibility = res.data.article.visibility;
+          this.allowcomment = res.data.article.commentGranted;
+          const regex = new RegExp('<img', 'gi')
+          this.file.content = this.file.content.replace(regex, `<img style="max-width: 100%; height: auto"`);
+          console.log("这里是viewfile")
+        }
+
       }).catch((error) => {
         console.log(error);
         this.$alert("网络连接错误");
@@ -273,4 +335,5 @@
       box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
       width: auto;
   } */
+
 </style>

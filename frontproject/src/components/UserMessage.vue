@@ -10,13 +10,13 @@
         <el-table-column prop="fields.type" label="类型"></el-table-column>
         <el-table-column prop="fields.content" label="内容"></el-table-column>
         <el-table-column prop="fields.time" label="发送日期"></el-table-column>
-        <el-table-column width="190">
-          <el-button-group slot-scope="scope">
+        <el-table-column width="210">
+          <template slot-scope="scope">
             <el-button type="primary" @click="AlreadyRead(scope.row)" v-if="scope.row.fields.type!=='团队邀请'">标记已读</el-button>
             <el-button type="danger" @click="Delete(scope.row)" v-if="scope.row.fields.type!=='团队邀请'">删除</el-button>
             <el-button type="primary" @click="Accept_Refuse(scope.row,true)" v-if="scope.row.fields.type==='团队邀请'">接受邀请</el-button>
             <el-button type="danger" @click="Accept_Refuse(scope.row,false)" v-if="scope.row.fields.type==='团队邀请'">拒绝</el-button>
-          </el-button-group>
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -26,10 +26,9 @@
         <el-table-column prop="fields.type" label="类型"></el-table-column>
         <el-table-column prop="fields.content" label="内容"></el-table-column>
         <el-table-column prop="fields.time" label="发送日期"></el-table-column>
-        <el-table-column width="190">
+        <el-table-column width="95">
           <el-button-group slot-scope="scope">
-            <el-button type="info" @click="KnowMore(scope.row)">查看详情</el-button>
-            <el-button type="danger" @click="DeleteFile(scope.row)">删除</el-button>
+            <el-button style="float: right" type="danger" @click="Delete(scope.row,false,scope.$index)">删除</el-button>
           </el-button-group>
         </el-table-column>
       </el-table>
@@ -75,8 +74,6 @@
         return str.substring(0,10)+" "+str.substring(11,19)
       },
       Accept_Refuse(row,bool){
-        console.log(row.fields.type)
-        console.log(row.fields.type==='团队邀请')
         axios({
           url:'http://127.0.0.1:8000/AcceptToJoinTeam',
           params: {
@@ -91,6 +88,32 @@
           location.reload()
         })
       },
+      AlreadyRead(row){
+        axios({
+          url:'http://127.0.0.1:8000/checkMessage',
+          params: {
+            name: this.$store.state.name,
+            token: this.$store.state.token,
+            pmid:row.pk,
+          }
+        }).then(res=>{
+          console.log(res)
+          location.reload()
+        })
+      },
+      Delete(row,isRecent,index){
+        axios({
+          url:'http://127.0.0.1:8000/deleteMessage',
+          params: {
+            name: this.$store.state.name,
+            token: this.$store.state.token,
+            pmid:row.pk,
+          }
+        }).then(res=>{
+          console.log(res)
+          location.reload()
+        })
+      }
     }
   }
 </script>

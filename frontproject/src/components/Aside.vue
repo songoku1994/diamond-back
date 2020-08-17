@@ -47,8 +47,6 @@
         name: [
           {icon: "el-icon-edit", title: "工作台", url:'/tools/home',id:"1"},
           {icon: "el-icon-share", title: "团队管理", url:'/tools/home',id:"2"},
-          {icon: "el-icon-delete", title: "导航三", url:'/tools/home',id:"3"},
-          {icon: "el-icon-user", title: "导航四", url:'/tools/home',id:"4"},
         ],
         zone: [
           {icon: "el-icon-edit", title: "个人信息", url:'/tools/userinfo', id:"4-1"},
@@ -116,7 +114,7 @@
   }
 
   .block {
-    height: 30px;
+    height: 200px;
   }
 
 </style>

@@ -23,7 +23,7 @@
     </div>
     <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submit" icon="el-icon-edit" v-if="AbleToEdit">编辑内容</el-button>
-        <el-button type="info" @click="save" v-if="AbleToEdit">保存并退出</el-button>
+        <el-button type="primary" @click="save" v-if="AbleToEdit">保存并退出</el-button>
         <el-button type="danger" @click="$emit('cancel')">{{quit}}</el-button>
       </span>
   </el-dialog>
@@ -75,7 +75,12 @@
           }
           this.$emit('cancel')
           console.log(this.OldFile)
-          this.$router.push({path:'/tools/editfile',query:{NewFile:this.OldFile}})
+          this.$router.push({
+            path:'/tools/editfile',
+            query:{
+              NewFile:JSON.stringify(this.OldFile)
+            }
+          })
         }).catch(res=>{
           this.$message({type:"warning",message:res})
         })

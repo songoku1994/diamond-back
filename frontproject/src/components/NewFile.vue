@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog title="新建文档" v-if="Visible" :visible.sync="Visible" width="490px" top="5vh" :show-close="false">
+    <el-dialog title="新建文档" v-if="Visible" :visible.sync="Visible" width="490px" top="5vh" :show-close="false" :close-on-click-modal="false">
       <div style="width: 80%">
         文档标题:<br><br>
         <el-input placeholder="请输入标题" v-model="NewFile.Title"></el-input>
@@ -70,7 +70,9 @@ export default {
         console.log(this.NewFile)
         this.$router.push({
           path:'/tools/editfile',
-          query:{NewFile:this.NewFile}
+          query:{
+            NewFile:JSON.stringify(this.NewFile)
+          }
         })
       }).catch(res=>{
         this.$message({type:"warning",message:res})
