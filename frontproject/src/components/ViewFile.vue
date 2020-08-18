@@ -3,6 +3,7 @@
     <el-container>
       <el-main id="file_main" style="">
         <div id="file_content_container">
+          <div style="float: right;font-size: 15px;color: #3e3e3e;">上次修改时间：{{lasttime}} </div>
           <div id="file_title">
             {{file.title}}
           </div>
@@ -94,9 +95,13 @@
         fid: "",
         commentList: '',
         soncommentsList: '',
+        lasttime: "",
       }
     },
     methods: {
+      TimeFormat(str){
+        return str.substring(0,10)+ " " + str.substring(11,19)
+      },
       handlefavorite() {
         if(this.isCollected === true){
           axios({
@@ -215,6 +220,7 @@
           this.author = res.data.author;
           this.visibility = res.data.article.visibility;
           this.allowcomment = res.data.article.commentGranted;
+          this.lasttime = this.TimeFormat(res.data.article.lastedittime)
           const regex = new RegExp('<img', 'gi')
           this.file.content = this.file.content.replace(regex, `<img style="max-width: 100%; height: auto"`);
           console.log("这里是viewfile")

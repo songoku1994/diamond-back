@@ -35,6 +35,8 @@ class Article(models.Model):
     commentGranted = models.BooleanField(default=True)
     createtime = models.DateTimeField(auto_now_add=True)
     lastedittime = models.DateTimeField(auto_now=True)
+    isEditing = models.BooleanField(default=False)
+    editorid = models.IntegerField(default=-1)
 
     def __str__(self):
         return self.title
@@ -121,3 +123,11 @@ class TeamMessage(models.Model):
     content = models.CharField(max_length=500)
     time = models.DateTimeField(auto_now_add=True)
     checked = models.BooleanField(default=False)
+
+
+class Worktrend(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=True)

@@ -89,7 +89,7 @@
             this.$message({type:"error",message:'已有同名标题'})
             return
           }
-          this.$emit('cancel')
+          this.$emit('cancel2')
           console.log(this.OldTeamFile)
           this.$router.push({
             path:'/tools/editfile',
@@ -132,8 +132,22 @@
           {
             console.log(res)
             this.$emit('cancel')
+            this.EndEdit(this.OldTeamFile.aid)
             location.reload()
           })
+        })
+      },
+      EndEdit(aid){
+        console.log(aid)
+        axios({
+          url:'http://127.0.0.1:8000/endEdit',
+          params:{
+            name:this.$store.state.name,
+            token:this.$store.state.token,
+            aid:aid
+          }
+        }).then(res=>{
+          console.log(res)
         })
       },
     },

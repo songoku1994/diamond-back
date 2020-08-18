@@ -50,6 +50,9 @@
       console.log('OLDFILE!!!')
       console.log(this.OldFile)
     },
+    beforeDestroy() {
+      this.EndEdit(this.OldFile.aid)
+    },
     methods:{
       submit(){
         if(this.OldFile.Title==='')
@@ -60,6 +63,17 @@
           })
           return
         }
+        // axios({
+        //   url:'http://127.0.0.1:8000/beginEdit',
+        //   params:{
+        //     name:this.$store.state.name,
+        //     token:this.$store.state.token,
+        //     tid:this.OldFile.TeamId,
+        //     aid:this.OldFile.aid
+        //   }
+        // }).then(res=>{
+        //   console.log(res)
+        // })
         axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
@@ -118,11 +132,24 @@
           axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
           {
             console.log(res)
+            this.EndEdit(this.OldFile.aid)
             this.$emit('cancel')
-            location.reload()
+            // location.reload()
           })
         }).catch(res=>{
           this.$message({type:"warning",message:res})
+        })
+      },
+      EndEdit(aid){
+        axios({
+          url:'http://127.0.0.1:8000/endEdit',
+          params:{
+            name:this.$store.state.name,
+            token:this.$store.state.token,
+            aid:aid
+          }
+        }).then(res=>{
+          console.log(res)
         })
       },
     },

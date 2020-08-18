@@ -1,6 +1,12 @@
 <template>
   <div>
-    <el-col :span="3">
+    <div class="fixedBlock" v-if="isFixed">
+      <el-col :span="3">
+        <span v-for="i in 5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      </el-col>
+    </div>
+    <div id="fixedAside" :class="{fixedAside : isFixed}">
+      <el-col :span="3">
       <el-menu
         :default-active="activeIndex"
         class="el-menu-vertical-demo"
@@ -34,6 +40,8 @@
 <!--    <div v-if="NewFileVisible">-->
       <NewFile :visible="NewFileVisible" @cancel="NewFileVisible=false"></NewFile>
 <!--    </div>-->
+    </div>
+
   </div>
 </template>
 
@@ -44,6 +52,8 @@
     components: {NewFile},
     data() {
       return{
+        isFixed: false,
+        offsetTop: 0,
         name: [
           {icon: "el-icon-edit", title: "工作台", url:'/tools/home',id:"1"},
           {icon: "el-icon-share", title: "团队管理", url:'/tools/home',id:"2"},
@@ -60,7 +70,19 @@
         NewFileVisible:false
       }
     },
+    mounted() {
+      this.offsetTop = document.querySelector("#fixedAside").offsetTop;
+      window.addEventListener('scroll', this.handleScroll);
+    },
     methods: {
+      handleScroll() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrollTop >= this.offsetTop) {
+          this.isFixed = true;
+        } else {
+          this.isFixed = false;
+        }
+      },
       NewFile(){
         console.log(123321)
         this.NewFileVisible=true
@@ -85,10 +107,25 @@
     created() {
 
     },
+    destroyed () {
+      window.removeEventListener('scroll', this.handleScroll); // 离开页面 关闭监听 不然会报错
+    }
   }
 </script>
 
 <style scope>
+  #fixedAside {
+    z-index: 99;
+  }
+
+    .fixedAside {
+        position: fixed;
+        z-index: 90;
+        top: 0;
+        height: 60px;
+        width: 100%;
+    }
+
   .newbutton {
     width: 30px;
     height: 30px;

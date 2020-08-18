@@ -21,6 +21,15 @@
             <el-option label="可评论" :value="1">可评论</el-option>
           </el-select>
         </div>
+        <div style="margin-top: 20px">
+          <div>模板</div>
+          <el-select v-model="Template">
+            <el-option label="空白模板" :value="0">空白模板</el-option>
+            <el-option label="模板一" :value="1">模板一</el-option>
+            <el-option label="模板二" :value="2">模板二</el-option>
+            <el-option label="模板三" :value="3">模板三</el-option>
+          </el-select>
+        </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="$emit('cancel')">取 消</el-button>
@@ -39,6 +48,7 @@ export default {
     return{
       NewFile:{Title:'',SimpleMessage:'',TeamId:-1,Authority:0,Revise:0,aid:-1},
       Authority:['仅自己','','','所有人可见','所有人可编辑'],
+      Template:0
     }
   },
   methods:{
@@ -71,7 +81,8 @@ export default {
         this.$router.push({
           path:'/tools/editfile',
           query:{
-            NewFile:JSON.stringify(this.NewFile)
+            NewFile:JSON.stringify(this.NewFile),
+            Template:JSON.stringify(this.Template)
           }
         })
       }).catch(res=>{

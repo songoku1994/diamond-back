@@ -7,8 +7,13 @@
       <change afterPath="$PROJECT_DIR$/frontproject/src/assets/3.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/frontproject/src/assets/4.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/frontproject/src/assets/card_bg2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontproject/src/components/ConfigTeamMsg.vue" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/frontproject/src/components/OtherUserInfo.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontproject/src/components/RetrievePsd.vue" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/frontproject/src/components/SearchNewMember.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontproject/src/components/UploadAction.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/Tphoto/04.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/Tphoto/06.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/media/Tphoto/4a731a90594a4af544c0c25941171jpeg.jpeg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/media/Tphoto/jhk-1589896592557.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/media/Tphoto/timg.jpg" afterDir="false" />
@@ -17,7 +22,6 @@
       <change afterPath="$PROJECT_DIR$/media/uphoto/05_lm9LlKa.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/media/uphoto/jhk-1589896592557_DpXCMPA.jpg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/media/uphoto/timg.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testapp/migrations/0002_personalmessage_type.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diamond/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/diamond/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/App.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/Aside.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/Aside.vue" afterDir="false" />
@@ -36,10 +40,13 @@
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/Tools.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/Tools.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/TopTools.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/TopTools.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/UserCollection.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/UserCollection.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontproject/src/components/UserFile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/UserFile.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/UserInfo.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/UserInfo.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/UserMessage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/UserMessage.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/UserTeam.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/UserTeam.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/ViewFile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/ViewFile.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontproject/src/components/WorkPlace.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/WorkPlace.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontproject/src/components/Worktrend.vue" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/components/ownfile.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/components/ownfile.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/router/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontproject/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontproject/src/store/index.js" afterDir="false" />
@@ -163,6 +170,7 @@
       <workItem from="1597576263038" duration="7690000" />
       <workItem from="1597587679433" duration="2724000" />
       <workItem from="1597626055416" duration="31306000" />
+      <workItem from="1597712429481" duration="27524000" />
     </task>
     <servers />
   </component>
@@ -205,9 +213,13 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="270" y="54" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1597323901569" />
-    <state x="467" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1597626055375">
+    <state x="467" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1597712430351">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="467" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1597626055375" />
+    <state x="467" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1597712430351" />
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1597742310400">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="431" y="145" width="672" height="678" key="search.everywhere.popup/0.0.1536.824@0.0.1536.824" timestamp="1597742310400" />
   </component>
 </project>

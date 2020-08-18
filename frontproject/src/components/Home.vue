@@ -82,6 +82,7 @@ export default {
         obj.title = res.data.articleList[i].title
         obj.date = this.TimeFormat(res.data.historyList[i].fields.browertime)
         obj.author = res.data.authorList[i]
+        obj.bhid = res.data.historyList[i].pk
         this.card.push(obj)
       }
     })
@@ -106,19 +107,30 @@ export default {
       });
     },
     deleteitem(id,index){
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('此操作将移除这条浏览记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.card.splice(index,1);
-        this.$axios.delete(''+id).then((resp)=> { //这个地方需要删除最近文档，或者后面商量一下作为收藏也可以
+        // this.card.splice(index,1);
+        axios({
+          url: "http://127.0.0.1:8000/deleteBrowerHistory",
+          method: "get",
+          params: {
+            name: this.$store.state.name,
+            token: this.$store.state.token,
+            bhid: this.card[index].bhid,
+          }
+        }).then(res => {
+          console.log(res);
           this.$message({
             type: 'success',
             message: '删除成功!'
           });
-          window.location.reload()
-        });
+          setTimeout(() =>{
+            window.location.reload()
+          },500);
+        })
       }).catch(() => {
         this.$message({
           type: 'info',

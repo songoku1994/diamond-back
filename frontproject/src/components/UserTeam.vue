@@ -16,6 +16,7 @@
               <span style="cursor: pointer;color:#409EFF"><i class="el-icon-more"></i></span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="{name:MoreMessage,data:index}">团队简介</el-dropdown-item>
+                <el-dropdown-item :command="{name:Config,data:index}" v-if="$store.state.name===TeamData[index].creatorname">团队设置</el-dropdown-item>
                 <el-dropdown-item :command="{name:Quit,data:index}" style="color: #f56c6c">退出</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -32,16 +33,17 @@
       :title="ShowData.tname"
       :visible.sync="ShowMessageVisible"
       width="30%" :show-close="false" :close-on-click-modal="false">
-      <div  style="margin-top: 30px"><span style="font-size: 20px">团队口号:</span><div style="margin-top: 15px">{{ShowData.tIntro}}</div></div>
-      <div style="font-size: 20px;margin-top: 30px"><span>团队人数:</span><span>{{ShowData.membernumber}}</span></div>
+      <div style="margin-top: 10px">团队信息:</div>
+      <el-input placeholder="该团队暂无团队信息" :rows="10" v-model="ShowData.tIntro" style="width: 80%;margin-top: 15px" type="textarea" disabled></el-input>
+      <div style="margin-top: 30px">团队人数:[{{ShowData.membernumber}}]</div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="ShowMessageVisible = false">确 定</el-button>
+        <el-button @click="ShowMessageVisible=false">返 回</el-button>
       </span>
     </el-dialog>
     <el-dialog
       title="新建团队"
       :visible.sync="NewMessageVisible"
-      width="30%">
+      width="30%" :show-close="false" :close-on-click-modal="false">
       <div style="width: 80%">
         团队名称:
         <el-input placeholder="请输入团队名称" v-model="NewTeamData.name" style="margin-top: 30px"></el-input>
@@ -65,13 +67,19 @@
       <el-button type="primary" @click="SubmitNewTeam()">确 定</el-button>
   </span>
     </el-dialog>
+    <ConfigTeamMsg :visible="ConfigTeamMsgVisible"
+                   :team="Team"
+                   @cancel="ConfigTeamMsgVisible=false"
+                   v-if="ConfigTeamMsgVisible" @success="Change"></ConfigTeamMsg>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
+  import ConfigTeamMsg from "./ConfigTeamMsg";
   export default {
     name: "UserTeam",
+    components: {ConfigTeamMsg},
     created() {
       axios({
         url:'http://127.0.0.1:8000/myTeam',
@@ -98,6 +106,8 @@
         image:null,
         fileList:[],
         imageUrl:null,
+        Team:null,
+        ConfigTeamMsgVisible:false
       }
     },
     watch:{
@@ -198,10 +208,10 @@
         this.NewMessageVisible=true
       },
       SubmitNewTeam(){
-        if(this.NewTeamData.name===''){
+        if(this.NewTeamData.name.length<3){
           this.$message({
             type:"error",
-            message:'请填写团队名！'
+            message:'团队名称过短！'
           })
           return
         }
@@ -209,6 +219,7 @@
         formData.append('name', this.$store.state.name,);
         formData.append( 'token',this.$store.state.token);
         formData.append('tname',this.NewTeamData.name);
+        formData.append('tid',-1);
         formData.append('tintro',this.NewTeamData.MoreMessage);
         if(this.fileList[this.fileList.length-1]!==undefined)
           formData.append('tphoto',this.fileList[this.fileList.length-1].raw);
@@ -241,6 +252,23 @@
             Team:JSON.stringify(this.TeamData[index]),
           }
         })
+      },
+      Config(index){
+        console.log(this.TeamData[index])
+        this.Team=this.TeamData[index]
+        this.Team.index=index
+        this.ConfigTeamMsgVisible=true
+      },
+      Change(val){
+        console.log(val)
+        this.ConfigTeamMsgVisible=false
+        this.$message({
+          type:"success",
+          message:'修改成功'
+        })
+        setTimeout(() =>{
+          window.location.reload()
+        },1000);
       },
     }
   }

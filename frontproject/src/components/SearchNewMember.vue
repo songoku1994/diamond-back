@@ -23,7 +23,7 @@
   import axios from 'axios'
   export default {
     name: "SearchNewMember",
-    props:['Visible','Team'],
+    props:['Visible','Team','TeamMember'],
     data(){
       return{
         SearchName:'',
@@ -54,7 +54,16 @@
               })
           }
         })
-      }
+      },
+      Check(name){
+        console.log('NAME!!!')
+        for(let i of this.TeamMember){
+          console.log(i)
+          if(i.name==name)
+            return false
+        }
+        return true
+      },
     },
     watch:{
       SearchName(){
@@ -70,7 +79,7 @@
         }).then(res=>{
           console.log(res.data.userList)
           for(let i of res.data.userList){
-            if(i.fields.name!=this.$store.state.name){
+            if(this.Check(i.fields.name)){
               let obj={}
               obj.name=i.fields.name
               obj.invited=false

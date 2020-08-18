@@ -98,7 +98,6 @@
           }
         }).then(res=>{
           console.log(res)
-          location.reload()
         })
       },
       Delete(row,isRecent,index){

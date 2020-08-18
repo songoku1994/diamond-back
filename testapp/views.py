@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse, FileResponse, Http404, Strea
 
 from diamond import settings
 from .models import User, UserToken, Article, MemberShip, Team, PersonalMessage, TeamMessage, Comment, Tocomment, \
-    BrowerHistory, Favorite
+    BrowerHistory, Favorite, Worktrend
 import uuid
 from testapp import models
 from datetime import datetime
@@ -20,15 +20,35 @@ def object_to_json(obj):
     return dict([(kk, obj.__dict__[kk]) for kk in obj.__dict__.keys() if kk != "_state"])
 
 
+# 根据邮箱更改密码
+@require_http_methods(["GET"])
+def changePasswordByEmail(request):
+    response = {}
+    try:
+        email = request.GET['email']
+        newpassword = request.GET['newpassword']
+        u = User.objects.get(email=email)
+        if u:
+            u.password = newpassword
+            u.save()
+            response['state'] = 1
+        else:
+            response['msg'] = "邮箱未注册过！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
 def check_mail(request):
     response = {}
     try:
         email = request.GET['email']
-        str = request.GET['str']
-        news = '【金刚石文档】验证码：' + str + '，您正在注册金刚石文档账号（若非本人操作，请忽略或删除本邮件）'
+        str = request.GET['str2']
         send_mail(
             subject='金刚石文档注册验证',
-            message=news,
+            message=str,
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[email]
         )
@@ -207,7 +227,7 @@ def uploadNewArticle(request):
                     article = Article()
                     response['msg'] = "创建了一个新文档"
                     article.uid = u
-                else:
+                else:  # 编辑文章
                     article = Article.objects.get(aid=aid)
                     response['msg'] = "修改了一个已存在的文档"
                 response['state'] = 1
@@ -217,6 +237,8 @@ def uploadNewArticle(request):
                     article.content = content
                 article.visibility = visibility
                 article.commentGranted = commentGranted
+                article.isEditing = True
+                article.editorid = u.uid
                 article.message = message
                 if ifteam > 0:
                     article.isTeamarticle = True
@@ -246,7 +268,7 @@ def getAllArticle(request):  # 我创建的全部文档的信息(不包含文档
         if u:
             if UserToken.objects.get(user=u, token=token):
                 response['state'] = 1
-                articles = Article.objects.filter(uid=u, isAbandoned=False, tid=-1)
+                articles = Article.objects.filter(uid=u, isAbandoned=False, tid=-1).order_by('-lastedittime')
                 for item in articles:
                     item.content = ""
                 response['articles'] = json.loads(serializers.serialize("json", articles))
@@ -281,7 +303,7 @@ def judgeRepetitiveArticleName(request):
             if UserToken.objects.get(user=u, token=token):
                 if tid == -1:  # 个人文章
                     if aid == -1:  # 新建文章
-                        if Article.objects.filter(uid=u, title=title):  # 重复
+                        if Article.objects.filter(uid=u, title=title, tid=-1):  # 重复
                             response['isRepetitiveArticleName'] = True
                         else:
                             response['isRepetitiveArticleName'] = False
@@ -599,6 +621,14 @@ def completelyDeleteArticle(request, id):
                 if article:
                     if article.uid == u or article.isTeamarticle == True and Team.objects.get(
                             tid=article.tid).creatorid == u.uid:
+                        if article.isTeamarticle:
+                            worktrend = Worktrend()
+                            worktrend.user = u
+                            worktrend.article = article
+                            worktrend.team = Team.objects.get(tid=article.tid)
+                            worktrend.content = str(u.name) + "删除了" + str(article.uid.name) + "创建的文章" + str(
+                                article.title)
+                            worktrend.save()
                         article.delete()
                         response['state'] = 1
                         response['msg'] = "彻底删除成功！"
@@ -631,9 +661,9 @@ def getListByKey(request):
         key = request.GET['key']
         if u:
             if UserToken.objects.get(user=u, token=token):
-                userList = User.objects.filter(name__icontains=key)
-                teamList = Team.objects.filter(tname__icontains=key)
-                articleList = Article.objects.filter(title__icontains=key, visibility__gte=3)
+                userList = User.objects.filter(name__icontains=key).order_by('name')
+                teamList = Team.objects.filter(tname__icontains=key).order_by('tname')
+                articleList = Article.objects.filter(title__icontains=key, visibility__gte=3).order_by('title')
                 authorList = []
                 for item in articleList:
                     authorName = item.uid.name
@@ -907,10 +937,13 @@ def getTeamArticles(request):
         tid = request.GET['tid']
         if u:
             if UserToken.objects.get(user=u, token=token):
-                ArticleList = Article.objects.filter(tid=tid)
+                ArticleList = Article.objects.filter(tid=tid).order_by('lastedittime')
+                authorList = []
                 for item in ArticleList:
                     item.content = ""
+                    authorList.append(item.uid.name)
                 response['ArticleList'] = json.loads(serializers.serialize("json", ArticleList))
+                response['authorList'] = authorList
                 response['state'] = 1
                 response['msg'] = "起飞！"
             else:
@@ -1013,7 +1046,7 @@ def allFavorite(request):  # 显示出我收藏的文档
         if u:
             if UserToken.objects.get(user=u, token=token):
                 response['state'] = 1
-                favoriteList = Favorite.objects.filter(user=u)
+                favoriteList = Favorite.objects.filter(user=u).order_by('-favoriteTime')
                 articleList = []
                 for item in favoriteList:
                     article = item.article
@@ -1060,7 +1093,7 @@ def exitTeam(request):
                 newMessage = PersonalMessage()
                 if u1 == u:  # 自己退群，给群主发消息
                     newMessage.type = "群成员退出"
-                    newMessage.user = User.objects.filter(uid=Team.creatorid)[0]
+                    newMessage.user = User.objects.filter(uid=team.creatorid)[0]
                     newMessage.isInviteMessage = False
                     newMessage.content = "群成员" + str(u1.name) + "退出了您的团队" + str(team.tname)
                     newMessage.save()
@@ -1245,7 +1278,6 @@ def deleteBrowerHistory(request):
         name = request.GET['name']
         token = request.GET['token']
         u = User.objects.get(name=name)
-        id = request.GET['id']
         BHid = request.GET["bhid"]
         if u:
             if UserToken.objects.get(user=u, token=token):
@@ -1416,7 +1448,7 @@ def allFavorite(request):
     return JsonResponse(response)
 
 
-#修改密码
+# 修改密码
 @require_http_methods(["GET"])
 def changePassword(request):
     response = {}
@@ -1447,3 +1479,224 @@ def changePassword(request):
         response['state'] = 5
     return JsonResponse(response)
 
+
+# 修改团队信息
+@require_http_methods(["POST"])
+def changeTeamInfo(request):
+    response = {}
+    try:
+        name = request.POST.get('name')
+        token = request.POST.get('token')
+        u = User.objects.get(name=name)
+        tid = request.POST.get('tid')
+        tid = int(tid)
+        team = Team.objects.get(tid=tid)
+        tname = request.POST.get('tname')
+        tintro = request.POST.get('tintro', "")
+        tphoto = request.FILES.get('tphoto', None)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                if Team.objects.filter(tname=tname) and team.tname != tname:
+                    response['msg'] = "团队名已存在"
+                    response['state'] = 0
+                else:
+                    team.tname = tname
+                    if tphoto is not None:
+                        team.Teamphoto = tphoto
+                    if tintro != "":
+                        team.tIntro = tintro
+                    team.save()
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 上传修改状态
+@require_http_methods(["GET"])
+def beginEdit(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        aid = request.GET['aid']
+        aid = int(aid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                article = Article.objects.get(aid=aid)
+                article.isEditing = True
+                article.editorid = u.uid
+                article.save()
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 结束修改状态
+@require_http_methods(["GET"])
+def endEdit(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        aid = request.GET['aid']
+        aid = int(aid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                article = Article.objects.get(aid=aid)
+                article.editorid = -1
+                article.isEditing = False
+                article.save()
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 判断是否处于编辑状态
+@require_http_methods(["GET"])
+def judgeIfEditing(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        aid = request.GET['aid']
+        aid = int(aid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                article = Article.objects.get(aid=aid)
+                response['isEditing'] = article.isEditing
+                if article.isEditing:
+                    response['editor'] = User.objects.get(uid=article.editorid).name
+                    response['msg'] = "用户" + str(User.objects.get(uid=article.editorid).name) + "正在编辑这篇文章"
+                else:
+                    response['msg'] = "这篇文章没有处于编辑状态，您可以编辑这篇文章"
+            else:
+                response['msg'] = "cookie 过期了!"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 获取团队的工作动态
+@require_http_methods(["GET"])
+def getTeamWorkTrend(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        tid = request.GET['tid']
+        tid = int(tid)
+        team = Team.objects.get(tid=tid)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                worktrendlist = Worktrend.objects.filter(team=team).order_by('-time')
+                articleList = []
+                namelist = []
+                for item in worktrendlist:
+                    namelist.append(item.user.name)
+                    articleList.append(item.article.title)
+                response['namelist'] = namelist
+                response['articleList'] = articleList
+                for item in worktrendlist:
+                    item.article.content = ""
+                response['worktrendlist'] = json.loads(serializers.serialize("json", worktrendlist))
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 上传工作动态
+@require_http_methods(["GET"])
+def uploadWorkTrend(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        tid = request.GET['tid']
+        tid = int(tid)
+        aid = request.GET['aid']
+        aid = int(aid)
+        article = Article.objects.get(aid=aid)
+        team = Team.objects.get(tid=tid)
+        content = request.GET['content']
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                if content != "":
+                    worktrend = Worktrend()
+                    worktrend.article = article
+                    worktrend.team = team
+                    worktrend.user = u
+                    worktrend.content = content
+                    worktrend.save()
+            else:
+                response['msg'] = "cookie过期了！"
+                response['state'] = 0
+
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)
+
+
+# 获取未读消息数
+@require_http_methods(["GET"])
+def getMessagenum(request):
+    response = {}
+    try:
+        name = request.GET['name']
+        token = request.GET['token']
+        u = User.objects.get(name=name)
+        if u:
+            if UserToken.objects.get(user=u, token=token):
+                list = PersonalMessage.objects.filter(user=u,checked=False)
+                messagenum = 0
+                for _ in list:
+                    messagenum = messagenum + 1
+                response['messagenum'] = messagenum
+            else:
+                response['msg'] = "cookie过期了！"
+                response['state'] = 0
+        else:
+            response['msg'] = "不存在这样的用户名！"
+            response['state'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['state'] = 0
+    return JsonResponse(response)

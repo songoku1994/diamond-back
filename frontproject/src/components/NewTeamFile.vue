@@ -28,6 +28,15 @@
             <el-option label="可评论" :value="1">可评论</el-option>
           </el-select>
         </div>
+        <div style="margin-top: 20px">
+          <div>模板</div>
+          <el-select v-model="Template">
+            <el-option label="空白模板" :value="0">空白模板</el-option>
+            <el-option label="模板一" :value="1">模板一</el-option>
+            <el-option label="模板二" :value="2">模板二</el-option>
+            <el-option label="模板三" :value="3">模板三</el-option>
+          </el-select>
+        </div>
       </div>
       <span slot="footer" class="dialog-footer">
       <el-button @click="$emit('cancel')">取 消</el-button>
@@ -46,6 +55,7 @@
       return {
         NewTeamFile:{Title:null,SimpleMessage:null,TeamId:null,Authority:0,Revise:0,TeamName:'',aid:-1},
         Authority:['仅自己','团队成员可见','团队成员可编辑','所有人可见','所有人可编辑'],
+        Template:0,
       }
     },
     created() {
@@ -85,7 +95,8 @@
             path:'/tools/editfile',
             query:{
               NewFile:JSON.stringify(this.NewTeamFile),
-              Team:JSON.stringify(this.Team)
+              Team:JSON.stringify(this.Team),
+              Template:JSON.stringify(this.Template)
             }
           })
         }).catch(res=>{

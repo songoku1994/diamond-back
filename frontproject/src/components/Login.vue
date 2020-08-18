@@ -24,7 +24,7 @@
           align="middle"
         >
           <el-col>
-            <div class="card2">
+            <div class="card2" style="border-radius: 25px;">
               <el-row>
                 <h2 align="center">用户登录</h2>
               </el-row>
@@ -59,7 +59,7 @@
                 </el-col>
               </el-row>
               <el-row style="text-align: center; margin-top: -10px;;">
-                <el-link type="primary">忘记密码</el-link>
+                <el-link type="primary" @click="doRetrieve()">忘记密码</el-link>
                 <el-col></el-col>
                 <el-link type="primary" @click="doRegister()">用户注册</el-link>
               </el-row>
@@ -107,6 +107,9 @@ export default {
   methods: {
     doRegister() {
       this.$router.push("/register");
+    },
+    doRetrieve() {
+      this.$router.push("/retrievepsd");
     },
     doSubmit() {
       // this.$router.push('/tools/home')
@@ -161,7 +164,7 @@ export default {
 .card2 {
   height: 9cm;
   width: 10cm;
-  background-color: #ffffffbd;
+  background-color: #ffffffa6;
   display: table-cell;
   vertical-align: middle;
 }
