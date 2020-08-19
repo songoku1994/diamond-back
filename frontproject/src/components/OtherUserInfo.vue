@@ -53,7 +53,7 @@
     props:['Visible','id'],
     created() {
       axios({
-        url:'http://127.0.0.1:8000/getUserInfoByID',
+        url:'http://112.124.17.52/getUserInfoByID',
         params:{
           name:this.$store.state.name,
           token:this.$store.state.token,
@@ -61,7 +61,7 @@
         }
       }).then(res=>{
         console.log(res)
-        this.Image='http://127.0.0.1:8000/media/'+res.data.userInfo.uphoto
+        this.Image='http://112.124.17.52/media/'+res.data.userInfo.uphoto
         this.Nick=res.data.userInfo.name
         this.Sex=!res.data.userInfo.gender?'男':'女'
         this.Birthday=res.data.userInfo.birthday

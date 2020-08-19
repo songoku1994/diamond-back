@@ -42,7 +42,7 @@
     Title: "UserFile",
     created() {
       axios({
-        url:'http://127.0.0.1:8000/myMessage',
+        url:'http://112.124.17.52/myMessage',
         params:{
           name: this.$store.state.name,
           token: this.$store.state.token,
@@ -75,7 +75,7 @@
       },
       Accept_Refuse(row,bool){
         axios({
-          url:'http://127.0.0.1:8000/AcceptToJoinTeam',
+          url:'http://112.124.17.52/AcceptToJoinTeam',
           params: {
             name: this.$store.state.name,
             token: this.$store.state.token,
@@ -90,7 +90,7 @@
       },
       AlreadyRead(row){
         axios({
-          url:'http://127.0.0.1:8000/checkMessage',
+          url:'http://112.124.17.52/checkMessage',
           params: {
             name: this.$store.state.name,
             token: this.$store.state.token,
@@ -98,11 +98,12 @@
           }
         }).then(res=>{
           console.log(res)
+          location.reload()
         })
       },
       Delete(row,isRecent,index){
         axios({
-          url:'http://127.0.0.1:8000/deleteMessage',
+          url:'http://112.124.17.52/deleteMessage',
           params: {
             name: this.$store.state.name,
             token: this.$store.state.token,

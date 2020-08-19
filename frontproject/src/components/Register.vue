@@ -8,7 +8,7 @@
       style="height:22cm"
     >
       <el-col :span="12">
-        <el-row class="card-step">
+        <el-row class="card-step" style="margin-bottom : 2cm">
           <el-col>
             <el-steps :active="active" finish-status="success">
               <el-step title="步骤 1"></el-step>
@@ -72,14 +72,13 @@
           </el-col>
         </el-row>
         <el-row
-          style="text-align: center;"
           type="flex"
           justify="center"
           align="middle"
           v-if="state === 'step2'"
         >
-          <el-col :offset="7">
-            <div class="card2" style="border-radius: 25px; margin:0 auto">
+          <el-col style="height: 7cm;width: 10cm;">
+            <div class="card4" style="border-radius: 25px; margin:0 auto">
               <el-row>
                 <h2 align="center">邮箱验证</h2>
               </el-row>
@@ -125,7 +124,7 @@
           align="middle"
           v-if="state === 'step3'"
         >
-          <el-col :offset="7">
+          <el-col style="height: 9cm;width: 10cm;">
             <div class="card2" style="border-radius: 25px; margin:0 auto">
               <el-row>
                 <h2 align="center">用户注册成功</h2>
@@ -217,7 +216,7 @@ export default {
         });
       } else {
         axios({
-          url: "http://127.0.0.1:8000/judgeRepetitiveUserName",
+          url: "http://112.124.17.52/judgeRepetitiveUserName",
           methods: "get",
           params: {
             name: this.username
@@ -251,7 +250,7 @@ export default {
           }
         };
         axios
-          .post("http://127.0.0.1:8000/register", formData, config)
+          .post("http://112.124.17.52/register", formData, config)
           .then(res => {
             this.$message({
               showClose: true,
@@ -307,7 +306,7 @@ export default {
           }
         };
         axios
-          .post("http://127.0.0.1:8000/register", formData, config)
+          .post("http://112.124.17.52/register", formData, config)
           .then(res => {
             this.$message({
               showClose: true,
@@ -344,7 +343,7 @@ export default {
         });
       } else {
         axios({
-          url: "http://127.0.0.1:8000/judgeRepetitiveEmail",
+          url: "http://112.124.17.52/judgeRepetitiveEmail",
           methods: "get",
           params: {
             email: this.email
@@ -374,7 +373,7 @@ export default {
               this.str +
               "，您正在注册金刚石文档账号（若非本人操作，请忽略或删除本邮件）";
             axios({
-              url: "http://127.0.0.1:8000/check_mail",
+              url: "http://112.124.17.52/check_mail",
               method: "get",
               params: {
                 email: this.email,
@@ -422,6 +421,13 @@ export default {
 }
 .card2 {
   height: 9cm;
+  width: 10cm;
+  background-color: #ffffffa6;
+  display: table-cell;
+  vertical-align: middle;
+}
+.card4 {
+  height: 7cm;
   width: 10cm;
   background-color: #ffffffa6;
   display: table-cell;

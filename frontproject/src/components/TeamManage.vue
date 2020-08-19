@@ -114,21 +114,21 @@
       this.Team=JSON.parse(this.$route.query.Team)
       axios.all([
         axios({
-          url:'http://127.0.0.1:8000/getTeamMembers',
+          url:'http://112.124.17.52/getTeamMembers',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.Team.tid
           }
         }),axios({
-          url:'http://127.0.0.1:8000/getTeamArticles',
+          url:'http://112.124.17.52/getTeamArticles',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.Team.tid
           }
         }),axios({
-        url:'http://127.0.0.1:8000/getTeamWorkTrend',
+        url:'http://112.124.17.52/getTeamWorkTrend',
         params:{
           name:this.$store.state.name,
           token:this.$store.state.token,
@@ -217,7 +217,7 @@
       DeleteFile(index){
         let boolean=''
         axios({
-          url:'http://127.0.0.1:8000/judgeIfEditing',
+          url:'http://112.124.17.52/judgeIfEditing',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
@@ -240,7 +240,7 @@
             type: 'warning'
           }).then(() => {
             axios({
-              url:'http://127.0.0.1:8000/completelyDeleteArticle/'+this.TeamFile[index].pk,
+              url:'http://112.124.17.52/completelyDeleteArticle/'+this.TeamFile[index].pk,
               params:{
                 name:this.$store.state.name,
                 token:this.$store.state.token,
@@ -269,7 +269,7 @@
           type: 'warning'
         }).then(() => {
           axios({
-            url:'http://127.0.0.1:8000/exitTeam',
+            url:'http://112.124.17.52/exitTeam',
             params:{
               name:this.$store.state.name,
               token:this.$store.state.token,
@@ -314,7 +314,7 @@
       Config(row){
         let boolean=''
         axios({
-          url:'http://127.0.0.1:8000/judgeIfEditing',
+          url:'http://112.124.17.52/judgeIfEditing',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
@@ -337,7 +337,7 @@
       },
       EndEdit(aid){
         axios({
-          url:'http://127.0.0.1:8000/endEdit',
+          url:'http://112.124.17.52/endEdit',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
@@ -349,7 +349,7 @@
       },
       BeginEdit(aid){
         axios({
-          url:'http://127.0.0.1:8000/beginEdit',
+          url:'http://112.124.17.52/beginEdit',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,

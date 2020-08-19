@@ -86,7 +86,7 @@
               'Content-Type': 'multipart/form-data'
             }
           }
-          axios.post('http://127.0.0.1:8000/changeTeamInfo',formData,config).then(res =>
+          axios.post('http://112.124.17.52/changeTeamInfo',formData,config).then(res =>
           {
             console.log(res)
             if(res.data.msg==="团队名已存在"){

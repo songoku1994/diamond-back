@@ -71,7 +71,7 @@
       {
         console.log(this.NewFile);
         axios({
-          url:"http://127.0.0.1:8000/getArticleContent/"+this.NewFile.aid,
+          url:"http://112.124.17.52/getArticleContent/"+this.NewFile.aid,
           params: {
             name:this.$store.state.name,
             token: this.$store.state.token
@@ -98,7 +98,7 @@
     },
     beforeDestroy() {
       axios({
-        url:'http://127.0.0.1:8000/endEdit',
+        url:'http://112.124.17.52/endEdit',
         params:{
           name:this.$store.state.name,
           token:this.$store.state.token,
@@ -185,7 +185,7 @@
             'Content-Type': 'multipart/form-data'
           }
         }
-        axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
+        axios.post('http://112.124.17.52/uploadNewArticle',formData,config).then(res =>
         {
           console.log('AAAAAIIIIIIDDDD!!!!')
           console.log(this.NewFile)
@@ -210,7 +210,7 @@
         console.log('AAAAAIIIIIIDDDD!!!!')
         console.log(this.NewFile)
         axios({
-          url:'http://127.0.0.1:8000/endEdit',
+          url:'http://112.124.17.52/endEdit',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,

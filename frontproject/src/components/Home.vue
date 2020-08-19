@@ -5,7 +5,7 @@
       <div class="info" style="border-bottom:2px solid #CCC;padding-top: 80px"></div>
       <el-main>
         <el-row id="firstblock">
-          <div v-for="(item,index) in card" :key="index" style="float:left;" @click="viewfile(item.id)">
+          <div v-for="(item,index) in card" :key="index" style="float:left;" @click="viewfile(item)">
             <el-col class="eachcard">
               <el-card class="box-card">
                 <el-image :src="require('../assets/file_logo.jpg')" fit="cover"> </el-image>
@@ -62,7 +62,7 @@ export default {
     const _this = this;
     console.log("created_recent_file");
     axios({
-      url: "http://127.0.0.1:8000/getBrowerHistory",
+      url: "http://112.124.17.52/getBrowerHistory",
       method:"get",
       params: {
         name:this.$store.state.name,
@@ -83,26 +83,34 @@ export default {
         obj.date = this.TimeFormat(res.data.historyList[i].fields.browertime)
         obj.author = res.data.authorList[i]
         obj.bhid = res.data.historyList[i].pk
+        obj.isAbandoned = res.data.articleList[i].isAbandoned
         this.card.push(obj)
       }
+      console.log(this.card)
     })
   },
   methods:{
     TimeFormat(str){
         return str.substring(0,10)
     },
-    viewfile(id){
-      this.$router.push({
-          path: "/tools/viewfile/"+id,
+    viewfile(item){
+      if(item.isAbandoned == true){
+        this.$alert("该文件已被删除，如需查看请从回收站恢复或者联系文档创建者")
+        return
+      }
+      else{
+        this.$router.push({
+          path: "/tools/viewfile/"+item.id,
           params: {
-            id : id,
+            id : item.id,
           }
         })
+      }
     },
     shareitem(id){
       this.$notify({
           title: '复制链接以分享',
-          message: 'http://127.0.0.1:8000/#/tools/viewfile/' + id,
+          message: 'http://112.124.17.52/#/tools/viewfile/' + id,
           type: 'success'
       });
     },
@@ -114,7 +122,7 @@ export default {
       }).then(() => {
         // this.card.splice(index,1);
         axios({
-          url: "http://127.0.0.1:8000/deleteBrowerHistory",
+          url: "http://112.124.17.52/deleteBrowerHistory",
           method: "get",
           params: {
             name: this.$store.state.name,

@@ -21,7 +21,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <el-image key="cover" :src="'http://127.0.0.1:8000/media/'+i.Teamphoto"></el-image>
+          <el-image key="cover" :src="'http://112.124.17.52/media/'+i.Teamphoto"></el-image>
         </el-card>
       </div>
       <div style="float: left;margin-top: 45px">
@@ -82,7 +82,7 @@
     components: {ConfigTeamMsg},
     created() {
       axios({
-        url:'http://127.0.0.1:8000/myTeam',
+        url:'http://112.124.17.52/myTeam',
         params:{
           name: this.$store.state.name,
           token: this.$store.state.token,
@@ -147,7 +147,7 @@
           }).then(() => {
             console.log(this.TeamData[index].tid)
             axios({
-              url:'http://127.0.0.1:8000/DisbandTeam',
+              url:'http://112.124.17.52/DisbandTeam',
               params:{
                 name:this.$store.state.name,
                 token:this.$store.state.token,
@@ -175,7 +175,7 @@
             type: 'warning'
           }).then(() => {
             axios({
-              url:'http://127.0.0.1:8000/exitTeam',
+              url:'http://112.124.17.52/exitTeam',
               params:{
                 name:this.$store.state.name,
                 token:this.$store.state.token,
@@ -228,7 +228,7 @@
             'Content-Type': 'multipart/form-data'
           }
         }
-        axios.post('http://127.0.0.1:8000/createTeam',formData,config).then(res =>
+        axios.post('http://112.124.17.52/createTeam',formData,config).then(res =>
         {
           console.log(res)
           if(res.data.msg==="团队名已存在"){

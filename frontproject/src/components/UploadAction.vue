@@ -26,7 +26,7 @@
     methods:{
       UploadAction(){
         axios({
-          url:'http://127.0.0.1:8000/uploadWorkTrend',
+          url:'http://112.124.17.52/uploadWorkTrend',
           params:{
             name:this.$store.state.name,
             token: this.$store.state.token,

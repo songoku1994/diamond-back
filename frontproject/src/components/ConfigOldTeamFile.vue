@@ -76,7 +76,7 @@
           })
           return
         }
-        axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
+        axios.get('http://112.124.17.52/judgeRepetitiveArticleName',{params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.OldTeamFile.TeamId,
@@ -101,7 +101,7 @@
         })
       },
       save(){
-        axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
+        axios.get('http://112.124.17.52/judgeRepetitiveArticleName',{params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.OldTeamFile.TeamId,
@@ -128,7 +128,7 @@
               'Content-Type': 'multipart/form-data'
             }
           }
-          axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
+          axios.post('http://112.124.17.52/uploadNewArticle',formData,config).then(res =>
           {
             console.log(res)
             this.$emit('cancel')
@@ -140,7 +140,7 @@
       EndEdit(aid){
         console.log(aid)
         axios({
-          url:'http://127.0.0.1:8000/endEdit',
+          url:'http://112.124.17.52/endEdit',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,

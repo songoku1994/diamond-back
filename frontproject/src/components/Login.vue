@@ -7,9 +7,10 @@
       align="middle"
       style="height:22cm"
     >
-      <el-col :span="13" push="2">
+    <!-- 此处span修改宽度 -->
+      <el-col :span="12" push="2">
         <div class="grid-content bg-purple" style="height:15cm">
-          <el-carousel indicator-position="inside" height="620px">
+          <el-carousel indicator-position="inside" height="600px">
             <el-carousel-item v-for="item in imagesbox" :key="item.id">
               <img :src="item.idView" class="carousel-image" />
             </el-carousel-item>
@@ -17,8 +18,16 @@
         </div>
       </el-col>
       <el-col :span="11" push="4">
+        <el-row style="margin-bottom: 2cm;border-radius: 25px;" class="card3" type="flex" align="middle" justify="center">
+          <el-col style="height: 2cm">
+            <el-image
+              :src="require('../assets/logo.jpg')"
+              fit='cover'
+            ></el-image>
+          </el-col>
+        </el-row>
         <el-row
-          style="text-align: center;"
+          style="text-align: center; width: 10cm;"
           type="flex"
           justify="end"
           align="middle"
@@ -91,7 +100,7 @@ export default {
     this.username = this.$route.query.username;
     this.password = this.$route.query.password;
     axios({
-      url: "http://127.0.0.1:8000/Authentication",
+      url: "http://112.124.17.52/Authentication",
       methods: "get",
       params: {
         name: this.$store.state.name,
@@ -114,7 +123,7 @@ export default {
     doSubmit() {
       // this.$router.push('/tools/home')
       axios({
-        url: "http://127.0.0.1:8000/login",
+        url: "http://112.124.17.52/login",
         method: "get",
         params: {
           name: this.username,
@@ -146,7 +155,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 610px;
+  line-height: 600px;
   margin: 0;
 }
 .carousel-image {
@@ -165,6 +174,12 @@ export default {
   height: 9cm;
   width: 10cm;
   background-color: #ffffffa6;
+  display: table-cell;
+  vertical-align: middle;
+}
+.card3{
+  height: 4cm;
+  width: 10cm;
   display: table-cell;
   vertical-align: middle;
 }

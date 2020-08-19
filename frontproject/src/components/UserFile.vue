@@ -37,7 +37,7 @@
     components: {ConfigOldFile},
     created() {
       axios({
-        url:"http://127.0.0.1:8000/getAllArticle",
+        url:"http://112.124.17.52/getAllArticle",
         method:"get",
         params:{
           name:this.$store.state.name,
@@ -84,17 +84,34 @@
         return str.substring(0,10)+" "+str.substring(11,19)
       },
       EditFile(index){
-        let i=index
-        console.log(this.AllFile[i].aid)
-        this.SelectArticle=this.AllFile[i]
-        console.log(this.SelectArticle)
-        this.ConfigOldFileVisible=true
-      //   this.$router.push({
-      //     path:'/tools/editfile',
-      //     query:{
-      //       NewFile:this.AllFile[i]
-      //     }
-      //   })
+        let boolean=''
+        axios({
+          url:'http://112.124.17.52/judgeIfEditing',
+          params:{
+            name:this.$store.state.name,
+            token:this.$store.state.token,
+            aid:this.AllFile[index].aid
+          }
+        }).then(res=>{
+          console.log(res)
+          boolean=res.data
+          if(boolean.isEditing){
+            this.$message({
+              type:"error",
+              message:boolean.msg
+            })
+            return
+          }
+          let i=index
+          this.BeginEdit(this.AllFile[i].aid)
+          console.log(this.AllFile[i].aid)
+          this.SelectArticle=this.AllFile[i]
+          console.log(this.SelectArticle)
+          this.ConfigOldFileVisible=true
+
+        })
+
+
       },
       DeleteFile(index){
         this.$confirm('此操作将删除该文档, 是否继续?', '提示', {
@@ -122,9 +139,18 @@
           });
         });
       },
-      CollectFile(index){
-
-      }
+      BeginEdit(aid){
+        axios({
+          url:'http://112.124.17.52/beginEdit',
+          params:{
+            name:this.$store.state.name,
+            token:this.$store.state.token,
+            aid:aid
+          }
+        }).then(res=>{
+          console.log(res)
+        })
+      },
 
 
     },

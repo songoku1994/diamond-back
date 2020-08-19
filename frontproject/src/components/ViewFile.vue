@@ -105,7 +105,7 @@
       handlefavorite() {
         if(this.isCollected === true){
           axios({
-            url:"http://127.0.0.1:8000/deleteFavorite",
+            url:"http://112.124.17.52/deleteFavorite",
             method:"get",
             params:{
               name:this.$store.state.name,
@@ -123,7 +123,7 @@
         }
         else{
           axios({
-            url:"http://127.0.0.1:8000/addFavorite",
+            url:"http://112.124.17.52/addFavorite",
             method:"get",
             params: {
               name: this.$store.state.name,
@@ -146,7 +146,7 @@
           if (valid) {
             // this.$alert(this.commentForm.content);
             axios({
-              url:"http://127.0.0.1:8000/createComment",
+              url:"http://112.124.17.52/createComment",
               method:"get",
               params:{
                 name:this.$store.state.name,
@@ -170,7 +170,7 @@
         console.log("我们现在要分享")
         this.$notify({
           title: '复制链接以分享',
-          message: 'http://127.0.0.1:8000/#/tools/viewfile/' + this.$route.params.id,
+          message: 'http://112.124.17.52/#/tools/viewfile/' + this.$route.params.id,
           type: 'success'
         });
       },
@@ -180,7 +180,7 @@
       console.log(this.$route.path)
       console.log(this.$route.params.id)
       axios({
-        url:"http://127.0.0.1:8000/judgeFavorite",
+        url:"http://112.124.17.52/judgeFavorite",
         method:"get",
         params:{
           name:this.$store.state.name,
@@ -194,7 +194,7 @@
         console.log(this.isCollected)
       })
       axios({
-        url:"http://127.0.0.1:8000/getArticleContent/"+this.$route.params.id,
+        url:"http://112.124.17.52/getArticleContent/"+this.$route.params.id,
         method:"get",
         params:{
           name:this.$store.state.name,

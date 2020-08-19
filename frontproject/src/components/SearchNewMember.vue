@@ -33,7 +33,7 @@
     methods:{
       Invite(row){
         axios({
-          url:'http://127.0.0.1:8000/inviteUserToTeam',
+          url:'http://112.124.17.52/inviteUserToTeam',
           params: {
             name:this.$store.state.name,
             token:this.$store.state.token,
@@ -69,7 +69,7 @@
       SearchName(){
         this.Member.splice(0,this.Member.length)
         axios({
-          url:'http://127.0.0.1:8000/getUserByKey',
+          url:'http://112.124.17.52/getUserByKey',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,

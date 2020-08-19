@@ -135,7 +135,7 @@
       this.key = this.$route.query.asd;
       console.log(this.key);
       axios({
-        url: "http://127.0.0.1:8000/getListByKey",
+        url: "http://112.124.17.52/getListByKey",
         methods: "get",
         params: {
           name: this.$store.state.name,
@@ -198,7 +198,7 @@
         this.NewFile=obj;
 
         axios({
-          url:'http://127.0.0.1:8000/judgeIfEditing',
+          url:'http://112.124.17.52/judgeIfEditing',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
@@ -215,7 +215,7 @@
             return
           }
           axios({
-            url:'http://127.0.0.1:8000/beginEdit',
+            url:'http://112.124.17.52/beginEdit',
             params:{
               name:this.$store.state.name,
               token:this.$store.state.token,
@@ -244,7 +244,7 @@
       },
       EndEdit(aid){
         axios({
-          url:'http://127.0.0.1:8000/endEdit',
+          url:'http://112.124.17.52/endEdit',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,

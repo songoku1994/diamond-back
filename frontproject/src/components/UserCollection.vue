@@ -63,7 +63,7 @@
       const _this = this;
       console.log("created_收藏");
       axios({
-        url:"http://127.0.0.1:8000/allFavorite",
+        url:"http://112.124.17.52/allFavorite",
         method:"get",
         params:{
           name:this.$store.state.name,
@@ -102,7 +102,7 @@
       shareitem(id){
         this.$notify({
           title: '复制链接以分享',
-          message: 'http://127.0.0.1:8000/#/tools/viewfile/' +  id,
+          message: 'http://112.124.17.52/#/tools/viewfile/' +  id,
           type: 'success'
         });
       },
@@ -114,7 +114,7 @@
         }).then(() => {
           console.log(this.card[index].aid)
           axios({
-            url:"http://127.0.0.1:8000/deleteFavorite",
+            url:"http://112.124.17.52/deleteFavorite",
             method:"get",
             params:{
               name:this.$store.state.name,
@@ -217,7 +217,7 @@
   }
 
   .box-card:hover {
-    background-color:blueviolet;
+    background-color:#90EE90;
     transition: 0.2s;
   }
 </style>

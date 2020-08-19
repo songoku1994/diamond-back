@@ -75,7 +75,7 @@
       console.log("进入评论区");
       console.log(this.aid);
       axios({
-        url:"http://127.0.0.1:8000/getCommentsOfArticle",
+        url:"http://112.124.17.52/getCommentsOfArticle",
         method:"get",
         params:{
           name:this.$store.state.name,
@@ -155,7 +155,7 @@
           if (valid && this.commentForm.cid !== '') {
             // this.$alert(this.commentForm.cid + "的子评论为" + this.commentForm.content);
             axios({
-              url:"http://127.0.0.1:8000/createToComment",
+              url:"http://112.124.17.52/createToComment",
               method:"get",
               params:{
                 name:this.$store.state.name,

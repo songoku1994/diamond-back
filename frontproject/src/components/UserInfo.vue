@@ -84,7 +84,7 @@
             ></el-input> -->
             <el-upload
               class="avatar-uploader"
-              action="http://127.0.0.1:8000/"
+              action="http://112.124.17.52/"
               :show-file-list="true"
               :on-success="handleAvatarSuccess"
               :on-change="changefile"
@@ -184,7 +184,7 @@ export default {
   name: "UserInfo",
   created() {
     axios({
-      url: "http://127.0.0.1:8000/myinfo",
+      url: "http://112.124.17.52/myinfo",
       methods: "get",
       params: {
         name: this.$store.state.name,
@@ -278,7 +278,7 @@ export default {
           }
           else {
             axios({
-              url:"http://127.0.0.1:8000/changePassword",
+              url:"http://112.124.17.52/changePassword",
               method:"get",
               params:{
                 name:this.$store.state.name,
@@ -349,7 +349,7 @@ export default {
           }
           console.log(formData)
           axios
-            .post("http://127.0.0.1:8000/changeUserInfo", formData, config)
+            .post("http://112.124.17.52/changeUserInfo", formData, config)
             .then(res => {
               console.log(res);
               if(res.data.state == 404){

@@ -24,7 +24,7 @@
     <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submit" icon="el-icon-edit" v-if="AbleToEdit">编辑内容</el-button>
         <el-button type="primary" @click="save" v-if="AbleToEdit">保存并退出</el-button>
-        <el-button type="danger" @click="$emit('cancel')">{{quit}}</el-button>
+        <el-button type="danger" @click="func()">{{quit}}</el-button>
       </span>
   </el-dialog>
 </template>
@@ -50,10 +50,11 @@
       console.log('OLDFILE!!!')
       console.log(this.OldFile)
     },
-    beforeDestroy() {
-      this.EndEdit(this.OldFile.aid)
-    },
     methods:{
+      func(){
+        this.EndEdit(this.OldFile.aid)
+        this.$emit('cancel')
+      },
       submit(){
         if(this.OldFile.Title==='')
         {
@@ -64,7 +65,7 @@
           return
         }
         // axios({
-        //   url:'http://127.0.0.1:8000/beginEdit',
+        //   url:'http://112.124.17.52/beginEdit',
         //   params:{
         //     name:this.$store.state.name,
         //     token:this.$store.state.token,
@@ -74,7 +75,7 @@
         // }).then(res=>{
         //   console.log(res)
         // })
-        axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
+        axios.get('http://112.124.17.52/judgeRepetitiveArticleName',{params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.OldFile.TeamId,
@@ -101,7 +102,7 @@
       },
       save(){
         console.log(this.OldFile)
-        axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
+        axios.get('http://112.124.17.52/judgeRepetitiveArticleName',{params:{
             name:this.$store.state.name,
             token:this.$store.state.token,
             tid:this.OldFile.TeamId,
@@ -129,7 +130,7 @@
               'Content-Type': 'multipart/form-data'
             }
           }
-          axios.post('http://127.0.0.1:8000/uploadNewArticle',formData,config).then(res =>
+          axios.post('http://112.124.17.52/uploadNewArticle',formData,config).then(res =>
           {
             console.log(res)
             this.EndEdit(this.OldFile.aid)
@@ -142,7 +143,7 @@
       },
       EndEdit(aid){
         axios({
-          url:'http://127.0.0.1:8000/endEdit',
+          url:'http://112.124.17.52/endEdit',
           params:{
             name:this.$store.state.name,
             token:this.$store.state.token,

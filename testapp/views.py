@@ -663,7 +663,8 @@ def getListByKey(request):
             if UserToken.objects.get(user=u, token=token):
                 userList = User.objects.filter(name__icontains=key).order_by('name')
                 teamList = Team.objects.filter(tname__icontains=key).order_by('tname')
-                articleList = Article.objects.filter(title__icontains=key, visibility__gte=3).order_by('title')
+                articleList = Article.objects.filter(title__icontains=key, visibility__gte=3,
+                                                     isAbandoned=False).order_by('title')
                 authorList = []
                 for item in articleList:
                     authorName = item.uid.name
@@ -1685,7 +1686,7 @@ def getMessagenum(request):
         u = User.objects.get(name=name)
         if u:
             if UserToken.objects.get(user=u, token=token):
-                list = PersonalMessage.objects.filter(user=u,checked=False)
+                list = PersonalMessage.objects.filter(user=u, checked=False)
                 messagenum = 0
                 for _ in list:
                     messagenum = messagenum + 1

@@ -13,6 +13,14 @@ const routes= [
     }
   },
   {
+  path:'/retrievepsd',
+    component:()=>import('../components/RetrievePsd'),
+    meta:{
+    title:"找回密码-金刚石文档",
+      requireAuth:false
+    }
+  },
+  {
     path:'/login',
     component:()=>import('../components/Login'),
     meta:{
@@ -64,7 +72,7 @@ const routes= [
         path:'bin',
         component:()=>import('../components/Bin'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"回收站-金刚石文档",
           requireAuth:true
         }
       },
@@ -96,7 +104,7 @@ const routes= [
         path:'editfile',
         component:()=>import('../components/Editfile'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"编辑文档-金刚石文档",
           requireAuth:true
         }
       },
@@ -105,7 +113,7 @@ const routes= [
         path:'searchfile',
         component:()=>import('../components/SearchFile'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"搜索-金刚石文档",
           requireAuth:true
         }
       },
@@ -113,7 +121,7 @@ const routes= [
         path:'usercollection',
         component:()=>import('../components/UserCollection'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"我的收藏-金刚石文档",
           requireAuth:true
         }
       },
@@ -121,7 +129,7 @@ const routes= [
         path:'ownfile',
         component:()=>import('../components/ownfile'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"我创建的-金刚石文档",
           requireAuth:true
         }
       },
@@ -129,7 +137,7 @@ const routes= [
         path:'teammanage',
         component:()=>import('../components/TeamManage'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"我的团队-金刚石文档",
           requireAuth:true
         }
       },
@@ -137,15 +145,7 @@ const routes= [
         path:'teammanage/:team',
         component:()=>import('../components/TeamManage'),
         meta:{
-          title:"我的文档-金刚石文档",
-          requireAuth:true
-        }
-      },
-      {
-        path:'teammanage/:team',
-        component:()=>import('../components/TeamManage'),
-        meta:{
-          title:"我的文档-金刚石文档",
+          title:"我的团队-金刚石文档",
           requireAuth:true
         }
       },
@@ -153,7 +153,7 @@ const routes= [
         path:'viewfile/:id',
         component:()=>import('../components/ViewFile'),
         meta:{
-          title:"我的文档-金刚石文档",
+          title:"查看文档-金刚石文档",
           requireAuth:true
         }
       }
@@ -170,7 +170,7 @@ router.beforeEach(
   (to,from,next)=>{
     if(to.meta.requireAuth){
       axios({
-        url:"http://127.0.0.1:8000/Authentication",
+        url:"http://112.124.17.52/Authentication",
         methods: "get",
         params:{
           name:store.state.name,

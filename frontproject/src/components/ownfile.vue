@@ -5,10 +5,10 @@
       <div class="info" style="border-bottom:2px solid #CCC;padding-top: 80px"></div>
       <el-main>
         <el-row id="firstblock">
-          <div style="float: left">
-            <div v-for="j in 8" style="float: left">&nbsp;</div>
-            <el-button type="info" style="height: 250px;width: 200px;font-size:150px;float: left; margin-top: 30px;margin-right: 30px;" icon="el-icon-circle-plus" class="clearfix" @click="tonewfile()"></el-button>
-          </div>
+<!--          <div style="float: left">-->
+<!--            <div v-for="j in 8" style="float: left">&nbsp;</div>-->
+<!--            <el-button type="info" style="height: 250px;width: 200px;font-size:150px;float: left; margin-top: 30px;margin-right: 30px;" icon="el-icon-circle-plus" class="clearfix" @click="tonewfile()"></el-button>-->
+<!--          </div>-->
           <div v-for="(item,index) in card" :key="index" style="float:left;" @click="toviewfile(item.aid)">
             <el-col class="eachcard">
               <el-card class="box-card">
@@ -30,7 +30,7 @@
                         <el-dropdown-item v-for="(item2,i) in operate" :key="i" :icon="item2.icon" :command="{task:item2.task,  id:item.aid,  cot:index}" style="flex: 1">{{item2.title}}</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
-                    <el-button type="text" class="button" @click.stop="EditFile(index)">编辑</el-button>
+<!--                    <el-button type="text" class="button" @click.stop="EditFile(index)">编辑</el-button>-->
                   </div>
                 </div>
               </el-card>
@@ -83,7 +83,7 @@
       const _this = this;
       console.log("起飞my_file");
       axios({
-        url:"http://127.0.0.1:8000/getAllArticle",
+        url:"http://112.124.17.52/getAllArticle",
         method:"get",
         params:{
           name:this.$store.state.name,
@@ -127,7 +127,7 @@
       shareitem(id){
         this.$notify({
           title: '复制链接以分享',
-          message: 'http://127.0.0.1:8000/#/tools/viewfile/' + id,
+          message: 'http://112.124.17.52/#/tools/viewfile/' + id,
           type: 'success'
         });
       },

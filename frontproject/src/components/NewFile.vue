@@ -62,7 +62,7 @@ export default {
         return
       }
       console.log(111222333)
-      axios.get('http://127.0.0.1:8000/judgeRepetitiveArticleName',{params:{
+      axios.get('http://112.124.17.52/judgeRepetitiveArticleName',{params:{
           name:this.$store.state.name,
           token:this.$store.state.token,
           tid:this.NewFile.TeamId,

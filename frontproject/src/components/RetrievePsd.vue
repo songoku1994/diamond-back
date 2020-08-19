@@ -8,7 +8,7 @@
       style="height:22cm"
     >
       <el-col :span="12">
-        <el-row class="card-step">
+        <el-row class="card-step" style="margin-bottom : 2cm">
           <el-col>
             <el-steps :active="active" finish-status="success">
               <el-step title="步骤 1"></el-step>
@@ -24,15 +24,15 @@
           align="middle"
           v-if="state === 'step1'"
         >
-          <el-col :offset="7">
-            <div class="card2" style="border-radius: 25px; margin:0 auto">
+          <el-col style="height: 7cm;width: 10cm;">
+            <div class="card5" style="border-radius: 25px; margin:0 auto">
               <el-row>
                 <h2 align="center">邮箱验证</h2>
               </el-row>
               <el-row type="flex" justify="center">
                 <el-col :span="14">
                   <el-input
-                    placeholder="请输入邮箱地址"
+                    placeholder="请输入注册邮箱"
                     v-model="email"
                     clearable
                   >
@@ -71,8 +71,8 @@
           align="middle"
           v-if="state === 'step2'"
         >
-          <el-col :offset="7">
-            <div class="card2" style="border-radius: 25px; margin:0 auto">
+          <el-col style="height: 7cm;width: 10cm;">
+            <div class="card5" style="border-radius: 25px; margin:0 auto">
               <el-row>
                 <h2 align="center">更改密码</h2>
               </el-row>
@@ -119,7 +119,7 @@
           align="middle"
           v-if="state === 'step3'"
         >
-          <el-col :offset="7">
+          <el-col style="height: 9cm;width: 10cm;">
             <div class="card2" style="border-radius: 25px; margin:0 auto">
               <el-row>
                 <h2 align="center">密码修改成功</h2>
@@ -200,7 +200,7 @@ export default {
         });
       } else {
         axios({
-          url: "http://127.0.0.1:8000/changePasswordByEmail",
+          url: "http://112.124.17.52/changePasswordByEmail",
           methods: "get",
           params: {
             email: this.email,
@@ -222,33 +222,6 @@ export default {
       if (this.psd === this.str) {
         this.active++;
         this.state = "step2";
-        // let formData = new FormData();
-        // formData.append("name", this.username);
-        // formData.append("email", this.email);
-        // formData.append("password", this.password);
-        // let config = {
-        //   headers: {
-        //     "Content-Type": "multipart/form-data"
-        //   }
-        // };
-        // axios
-        //   .post("http://127.0.0.1:8000/register", formData, config)
-        //   .then(res => {
-        //     this.$message({
-        //       showClose: true,
-        //       message: res.data.msg,
-        //       type: res.data.state === 1 ? "success" : "error"
-        //     });
-        //     if (res.data.state === 1) {
-        //       this.$router.push({
-        //         path: "/login",
-        //         query: {
-        //           username: this.username,
-        //           password: this.password
-        //         }
-        //       });
-        //     }
-        //   });
       } else {
         this.$message({
           showClose: true,
@@ -271,7 +244,7 @@ export default {
         });
       } else {
         axios({
-          url: "http://127.0.0.1:8000/judgeRepetitiveEmail",
+          url: "http://112.124.17.52/judgeRepetitiveEmail",
           methods: "get",
           params: {
             email: this.email
@@ -301,7 +274,7 @@ export default {
               this.str +
               "，您正在找回金刚石文档账号密码（若非本人操作，请忽略或删除本邮件）";
             axios({
-              url: "http://127.0.0.1:8000/check_mail",
+              url: "http://112.124.17.52/check_mail",
               method: "get",
               params: {
                 email: this.email,
@@ -347,8 +320,8 @@ export default {
   height: 100%;
   width: 100%;
 }
-.card2 {
-  height: 9cm;
+.card5 {
+  height: 7cm;
   width: 10cm;
   background-color: #ffffffbd;
   display: table-cell;
